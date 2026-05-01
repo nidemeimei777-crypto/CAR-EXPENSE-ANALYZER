@@ -248,10 +248,13 @@
                 <div class="form-group"><label>Дата</label><input type="date" id="expenseDate"></div>
                 <div class="form-group"><label>Категория</label>
                     <select id="expenseCategory">
-                        <option value="repair">Ремонт</option>
-                        <option value="insurance">Страховка</option>
-                        <option value="wash">Мойка</option>
-                        <option value="other">Другое</option>
+                        <select name="category">
+                        <option value="fuel">⛽ Бензин</option>
+                        <option value="gas">⛽ Газ</option>
+                        <option value="wash">🧼 Мойка</option>
+                        <option value="repair">🔧 Ремонт</option>
+                        <option value="insurance">📄 Страховка</option>
+                        <option value="other">📌 Другое</option>
                     </select>
                 </div>
                 <div class="form-group"><label>Сумма (₽)</label><input type="number" id="expenseAmount"></div>
