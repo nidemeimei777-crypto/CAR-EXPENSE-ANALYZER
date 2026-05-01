@@ -1,0 +1,372 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Car Expense Analyzer | Учёт расходов на авто</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        /* Карточки */
+        .card {
+            background: white;
+            border-radius: 16px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.1);
+            padding: 24px;
+            margin-bottom: 24px;
+        }
+
+        h1 {
+            color: white;
+            font-size: 2rem;
+            margin-bottom: 20px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.2);
+        }
+
+        h2 {
+            color: #333;
+            border-left: 4px solid #667eea;
+            padding-left: 15px;
+            margin-bottom: 20px;
+            font-size: 1.5rem;
+        }
+
+        /* Таблицы */
+        .table-responsive {
+            overflow-x: auto;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            background: white;
+            border-radius: 12px;
+            overflow: hidden;
+        }
+
+        th {
+            background: #667eea;
+            color: white;
+            padding: 12px;
+            text-align: left;
+            font-weight: 600;
+        }
+
+        td {
+            padding: 10px 12px;
+            border-bottom: 1px solid #e0e0e0;
+        }
+
+        tr:hover {
+            background: #f5f5f5;
+        }
+
+        /* Кнопки */
+        .btn {
+            background: #667eea;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 14px;
+            transition: all 0.3s ease;
+            margin-right: 10px;
+            margin-bottom: 10px;
+        }
+
+        .btn:hover {
+            background: #5a67d8;
+            transform: translateY(-2px);
+        }
+
+        .btn-danger {
+            background: #e53e3e;
+        }
+
+        .btn-danger:hover {
+            background: #c53030;
+        }
+
+        .btn-success {
+            background: #48bb78;
+        }
+
+        .btn-success:hover {
+            background: #38a169;
+        }
+
+        /* Формы */
+        .form-group {
+            margin-bottom: 15px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: 600;
+            color: #333;
+        }
+
+        input, select {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            font-size: 14px;
+        }
+
+        .form-row {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+        }
+
+        /* Статистика */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            margin-bottom: 20px;
+        }
+
+        .stat-card {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 20px;
+            border-radius: 12px;
+            text-align: center;
+        }
+
+        .stat-card h3 {
+            font-size: 2rem;
+            margin-bottom: 5px;
+        }
+
+        .stat-card p {
+            opacity: 0.9;
+        }
+
+        /* Утилиты */
+        .text-center {
+            text-align: center;
+        }
+
+        .mt-20 {
+            margin-top: 20px;
+        }
+
+        .error {
+            background: #fed7d7;
+            color: #c53030;
+            padding: 10px;
+            border-radius: 8px;
+            margin-bottom: 15px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🚗 Car Expense Analyzer</h1>
+
+        <!-- Статистика -->
+        <div class="stats-grid" id="stats">
+            <div class="stat-card">
+                <h3 id="totalCars">0</h3>
+                <p>Автомобилей</p>
+            </div>
+            <div class="stat-card">
+                <h3 id="totalExpenses">0</h3>
+                <p>Всего расходов (₽)</p>
+            </div>
+            <div class="stat-card">
+                <h3 id="avgConsumption">-</h3>
+                <p>Ср. расход (л/100км)</p>
+            </div>
+        </div>
+
+        <!-- Список автомобилей -->
+        <div class="card">
+            <h2>🚙 Мои автомобили</h2>
+            <button class="btn btn-success" onclick="showAddCarForm()">+ Добавить автомобиль</button>
+            <div class="table-responsive">
+                <table id="carsTable">
+                    <thead>
+                        <tr><th>ID</th><th>Марка</th><th>Модель</th><th>Год</th><th>Госномер</th><th>Действия</th></tr>
+                    </thead>
+                    <tbody id="carsList"></tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- Форма добавления автомобиля (скрыта) -->
+        <div id="addCarForm" class="card" style="display:none;">
+            <h2>➕ Добавить автомобиль</h2>
+            <div class="form-row">
+                <div class="form-group"><label>Марка</label><input type="text" id="carBrand" placeholder="Toyota"></div>
+                <div class="form-group"><label>Модель</label><input type="text" id="carModel" placeholder="Camry"></div>
+                <div class="form-group"><label>Год</label><input type="number" id="carYear" placeholder="2022"></div>
+                <div class="form-group"><label>Госномер</label><input type="text" id="carPlate" placeholder="А123ВС"></div>
+            </div>
+            <button class="btn" onclick="addCar()">Сохранить</button>
+            <button class="btn btn-danger" onclick="hideAddCarForm()">Отмена</button>
+        </div>
+
+        <!-- Расходы -->
+        <div class="card">
+            <h2>💰 Расходы</h2>
+            <button class="btn btn-success" onclick="showAddExpenseForm()">+ Добавить расход</button>
+            <div class="table-responsive">
+                <table id="expensesTable">
+                    <thead><tr><th>ID авто</th><th>Дата</th><th>Категория</th><th>Сумма (₽)</th><th>Описание</th></tr></thead>
+                    <tbody id="expensesList"></tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- Форма добавления расхода -->
+        <div id="addExpenseForm" class="card" style="display:none;">
+            <h2>➕ Добавить расход</h2>
+            <div class="form-row">
+                <div class="form-group"><label>ID авто</label><input type="number" id="expenseCarId" placeholder="1"></div>
+                <div class="form-group"><label>Дата</label><input type="date" id="expenseDate"></div>
+                <div class="form-group"><label>Категория</label>
+                    <select id="expenseCategory">
+                        <option value="repair">Ремонт</option>
+                        <option value="insurance">Страховка</option>
+                        <option value="wash">Мойка</option>
+                        <option value="other">Другое</option>
+                    </select>
+                </div>
+                <div class="form-group"><label>Сумма (₽)</label><input type="number" id="expenseAmount"></div>
+                <div class="form-group"><label>Описание</label><input type="text" id="expenseDesc"></div>
+            </div>
+            <button class="btn" onclick="addExpense()">Сохранить</button>
+            <button class="btn btn-danger" onclick="hideAddExpenseForm()">Отмена</button>
+        </div>
+    </div>
+
+    <script>
+        const API_URL = "http://127.0.0.1:8000";
+
+        async function loadCars() {
+            const res = await fetch(`${API_URL}/cars`);
+            const cars = await res.json();
+            const tbody = document.getElementById('carsList');
+            tbody.innerHTML = '';
+            cars.forEach(car => {
+                const row = tbody.insertRow();
+                row.insertCell(0).textContent = car.id;
+                row.insertCell(1).textContent = car.brand;
+                row.insertCell(2).textContent = car.model;
+                row.insertCell(3).textContent = car.year;
+                row.insertCell(4).textContent = car.license_plate;
+                const actions = row.insertCell(5);
+                const delBtn = document.createElement('button');
+                delBtn.textContent = 'Удалить';
+                delBtn.className = 'btn btn-danger';
+                delBtn.style.padding = '5px 10px';
+                delBtn.onclick = () => deleteCar(car.id);
+                actions.appendChild(delBtn);
+            });
+            document.getElementById('totalCars').textContent = cars.length;
+        }
+
+        async function loadExpenses() {
+            const res = await fetch(`${API_URL}/expenses`);
+            const expenses = await res.json();
+            const tbody = document.getElementById('expensesList');
+            tbody.innerHTML = '';
+            expenses.forEach(exp => {
+                const row = tbody.insertRow();
+                row.insertCell(0).textContent = exp.car_id;
+                row.insertCell(1).textContent = exp.date;
+                row.insertCell(2).textContent = exp.category;
+                row.insertCell(3).textContent = exp.amount;
+                row.insertCell(4).textContent = exp.description || '-';
+            });
+            const total = expenses.reduce((sum, e) => sum + e.amount, 0);
+            document.getElementById('totalExpenses').textContent = total.toLocaleString();
+        }
+
+        async function loadConsumption() {
+            const carsRes = await fetch(`${API_URL}/cars`);
+            const cars = await carsRes.json();
+            if (cars.length > 0) {
+                const statsRes = await fetch(`${API_URL}/stats/fuel_consumption/${cars[0].id}`);
+                if (statsRes.ok) {
+                    const stats = await statsRes.json();
+                    document.getElementById('avgConsumption').textContent = stats.avg_fuel_consumption_L_per_100km || '-';
+                }
+            }
+        }
+
+        async function addCar() {
+            const car = {
+                brand: document.getElementById('carBrand').value,
+                model: document.getElementById('carModel').value,
+                year: parseInt(document.getElementById('carYear').value),
+                license_plate: document.getElementById('carPlate').value
+            };
+            await fetch(`${API_URL}/cars`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(car)
+            });
+            hideAddCarForm();
+            loadCars();
+        }
+
+        async function deleteCar(id) {
+            if (confirm('Удалить автомобиль? Все связанные записи также будут удалены.')) {
+                await fetch(`${API_URL}/cars/${id}`, { method: 'DELETE' });
+                loadCars();
+                loadExpenses();
+            }
+        }
+
+        async function addExpense() {
+            const expense = {
+                car_id: parseInt(document.getElementById('expenseCarId').value),
+                date: document.getElementById('expenseDate').value,
+                category: document.getElementById('expenseCategory').value,
+                amount: parseFloat(document.getElementById('expenseAmount').value),
+                description: document.getElementById('expenseDesc').value
+            };
+            await fetch(`${API_URL}/expenses`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(expense)
+            });
+            hideAddExpenseForm();
+            loadExpenses();
+        }
+
+        function showAddCarForm() { document.getElementById('addCarForm').style.display = 'block'; }
+        function hideAddCarForm() { document.getElementById('addCarForm').style.display = 'none'; }
+        function showAddExpenseForm() { document.getElementById('addExpenseForm').style.display = 'block'; }
+        function hideAddExpenseForm() { document.getElementById('addExpenseForm').style.display = 'none'; }
+
+        // Инициализация
+        loadCars();
+        loadExpenses();
+        loadConsumption();
+    </script>
+</body>
+</html>
