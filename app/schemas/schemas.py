@@ -2,8 +2,8 @@ from datetime import date
 from pydantic import BaseModel, field_validator
 from typing import Optional
 
-
 # ==================== АВТОМОБИЛИ ====================
+
 
 class CarCreate(BaseModel):
     brand: str
@@ -11,10 +11,10 @@ class CarCreate(BaseModel):
     year: int
     license_plate: str
 
-    @field_validator('year')
+    @field_validator("year")
     def validate_year(cls, v):
         if v < 1900 or v > 2026:
-            raise ValueError('Год должен быть между 1900 и 2026')
+            raise ValueError("Год должен быть между 1900 и 2026")
         return v
 
 
@@ -30,6 +30,7 @@ class CarResponse(CarCreate):
 
 
 # ==================== ЗАПРАВКИ ====================
+
 
 class FuelUpCreate(BaseModel):
     car_id: int
@@ -50,7 +51,8 @@ class FuelUpResponse(FuelUpCreate):
     id: int
 
 
-#заправки и расходы
+# заправки и расходы
+
 
 class FuelUpWithExpenseCreate(BaseModel):
     car_id: int
@@ -62,6 +64,7 @@ class FuelUpWithExpenseCreate(BaseModel):
 
 # ==================== РАСХОДЫ ====================
 
+
 class ExpenseCreate(BaseModel):
     car_id: int
     date: date
@@ -69,14 +72,20 @@ class ExpenseCreate(BaseModel):
     amount: float
     description: Optional[str] = None
 
-    @field_validator('category')
+    @field_validator("category")
     def validate_category(cls, v):
         allowed = [
-            'заправка', 'ремонт', 'мойка', 'штраф', 'платные дороги', 
-            'страховка', 'транспортный налог',  'другое'
+            "заправка",
+            "ремонт",
+            "мойка",
+            "штраф",
+            "платные дороги",
+            "страховка",
+            "транспортный налог",
+            "другое",
         ]
         if v not in allowed:
-            raise ValueError(f'Категория должна быть одной из: {allowed}')
+            raise ValueError(f"Категория должна быть одной из: {allowed}")
         return v
 
 
@@ -92,6 +101,7 @@ class ExpenseResponse(ExpenseCreate):
 
 
 # ==================== ПРОБЕГ ====================
+
 
 class OdometerReadingCreate(BaseModel):
     car_id: int
@@ -111,6 +121,7 @@ class OdometerReadingResponse(OdometerReadingCreate):
 
 
 # ==================== НАПОМИНАНИЯ ====================
+
 
 class ReminderCreate(BaseModel):
     car_id: int
@@ -135,15 +146,16 @@ class ReminderResponse(ReminderCreate):
 
 # ==================== ПОЛЬЗОВАТЕЛИ ====================
 
+
 class UserCreate(BaseModel):
     username: str
     email: str
     password: str
 
-    @field_validator('email')
+    @field_validator("email")
     def validate_email(cls, v):
-        if '@' not in v or '.' not in v:
-            raise ValueError('Invalid email format')
+        if "@" not in v or "." not in v:
+            raise ValueError("Invalid email format")
         return v
 
 
