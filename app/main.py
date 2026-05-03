@@ -4,7 +4,7 @@ from fastapi.responses import HTMLResponse
 from contextlib import asynccontextmanager
 from app.db import async_engine, Base
 from app.routes import cars, fuelups, expenses, reminders, stats, auth, analytics
-from app import models
+
 
 # Создание таблиц при запуске
 @asynccontextmanager
@@ -13,6 +13,7 @@ async def lifespan(app: FastAPI):
         await conn.run_sync(Base.metadata.create_all)
     yield
     await async_engine.dispose()
+
 
 templates = Jinja2Templates(directory="templates")
 
