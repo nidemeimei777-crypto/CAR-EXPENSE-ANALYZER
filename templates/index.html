@@ -5,25 +5,14 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Car Expense Analyzer | Учёт расходов на авто</title>
     <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-
+        * { margin: 0; padding: 0; box-sizing: border-box; }
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             min-height: 100vh;
             padding: 20px;
         }
-
-        .container {
-            max-width: 1400px;
-            margin: 0 auto;
-        }
-
-        /* Карточки */
+        .container { max-width: 1400px; margin: 0 auto; }
         .card {
             background: white;
             border-radius: 16px;
@@ -31,345 +20,1471 @@
             padding: 24px;
             margin-bottom: 24px;
         }
-
-        h1 {
-            color: white;
-            font-size: 2rem;
-            margin-bottom: 20px;
-            text-shadow: 2px 2px 4px rgba(0,0,0,0.2);
-        }
-
-        h2 {
-            color: #333;
-            border-left: 4px solid #667eea;
-            padding-left: 15px;
-            margin-bottom: 20px;
-            font-size: 1.5rem;
-        }
-
-        /* Таблицы */
-        .table-responsive {
-            overflow-x: auto;
-        }
-
-        table {
-            width: 100%;
-            border-collapse: collapse;
-            background: white;
-            border-radius: 12px;
-            overflow: hidden;
-        }
-
-        th {
-            background: #667eea;
-            color: white;
-            padding: 12px;
-            text-align: left;
-            font-weight: 600;
-        }
-
-        td {
-            padding: 10px 12px;
-            border-bottom: 1px solid #e0e0e0;
-        }
-
-        tr:hover {
-            background: #f5f5f5;
-        }
-
-        /* Кнопки */
+        h1 { color: white; font-size: 2rem; margin-bottom: 20px; text-shadow: 2px 2px 4px rgba(0,0,0,0.2); }
+        h2 { color: #333; border-left: 4px solid #667eea; padding-left: 15px; margin-bottom: 20px; font-size: 1.5rem; }
+        .table-responsive { overflow-x: auto; }
+        table { width: 100%; border-collapse: collapse; background: white; border-radius: 12px; overflow: hidden; }
+        th { background: #667eea; color: white; padding: 12px; text-align: left; font-weight: 600; }
+        td { padding: 10px 12px; border-bottom: 1px solid #e0e0e0; }
+        tr:hover { background: #f5f5f5; }
         .btn {
-            background: #667eea;
-            color: white;
-            border: none;
-            padding: 10px 20px;
-            border-radius: 8px;
-            cursor: pointer;
-            font-size: 14px;
-            transition: all 0.3s ease;
-            margin-right: 10px;
-            margin-bottom: 10px;
+            background: #667eea; color: white; border: none; padding: 8px 16px;
+            border-radius: 6px; cursor: pointer; font-size: 13px;
+            transition: all 0.3s ease; margin-right: 5px;
         }
-
-        .btn:hover {
-            background: #5a67d8;
-            transform: translateY(-2px);
-        }
-
-        .btn-danger {
-            background: #e53e3e;
-        }
-
-        .btn-danger:hover {
-            background: #c53030;
-        }
-
-        .btn-success {
-            background: #48bb78;
-        }
-
-        .btn-success:hover {
-            background: #38a169;
-        }
-
-        /* Формы */
-        .form-group {
-            margin-bottom: 15px;
-        }
-
-        label {
-            display: block;
-            margin-bottom: 5px;
-            font-weight: 600;
-            color: #333;
-        }
-
-        input, select {
-            width: 100%;
-            padding: 10px;
-            border: 1px solid #ddd;
-            border-radius: 8px;
-            font-size: 14px;
-        }
-
-        .form-row {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            gap: 15px;
-        }
-
-        /* Статистика */
         .stats-grid {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
             gap: 20px;
-            margin-bottom: 20px;
+            margin-bottom: 30px;
         }
-
         .stat-card {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: linear-gradient(135deg, rgba(255, 255, 255, 0.25) 0%, rgba(255, 255, 255, 0.15) 100%);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            padding: 25px 20px;
+            text-align: center;
             color: white;
-            padding: 20px;
-            border-radius: 12px;
-            text-align: center;
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            transition: transform 0.3s ease, background 0.3s ease;
         }
-
+        .stat-card:hover {
+            transform: translateY(-5px);
+            background: linear-gradient(135deg, rgba(255, 255, 255, 0.35) 0%, rgba(255, 255, 255, 0.2) 100%);
+        }
         .stat-card h3 {
-            font-size: 2rem;
-            margin-bottom: 5px;
+            font-size: 2.2rem;
+            margin-bottom: 8px;
+            font-weight: 700;
+            color: white;
         }
-
         .stat-card p {
+            font-size: 0.9rem;
             opacity: 0.9;
+            color: white;
         }
-
-        /* Утилиты */
-        .text-center {
+        .btn:hover { background: #5a67d8; transform: translateY(-1px); }
+        .btn-danger { background: #e53e3e; }
+        .btn-danger:hover { background: #c53030; }
+        .btn-warning { background: #ed8936; }
+        .btn-warning:hover { background: #dd6b20; }
+        .btn-success { background: #48bb78; }
+        .btn-success:hover { background: #38a169; }
+        .btn-sm { padding: 5px 10px; font-size: 12px; }
+        .form-group { margin-bottom: 15px; }
+        label { display: block; margin-bottom: 5px; font-weight: 600; color: #333; }
+        input, select { width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 8px; font-size: 14px; }
+        .form-row { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px; }
+        .stat-card { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 20px; border-radius: 12px; text-align: center; }
+        .stat-card h3 { font-size: 2rem; margin-bottom: 5px; }
+        .text-center { text-align: center; }
+        .contacts a { color: #667eea; text-decoration: none; }
+        .contacts a:hover { text-decoration: underline; }
+        
+        .toast-notification {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            padding: 15px 20px;
+            border-radius: 8px;
+            color: white;
+            font-weight: 500;
+            z-index: 1000;
+            animation: slideIn 0.3s ease;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+        }
+        .toast-success { background: #48bb78; }
+        .toast-error { background: #e53e3e; }
+        .toast-warning { background: #ed8936; }
+        @keyframes slideIn {
+            from { transform: translateX(100%); opacity: 0; }
+            to { transform: translateX(0); opacity: 1; }
+        }
+        
+        .filter-bar {
+            display: flex;
+            gap: 15px;
+            align-items: flex-end;
+            margin-bottom: 15px;
+            flex-wrap: wrap;
+        }
+        .filter-bar .form-group {
+            margin-bottom: 0;
+        }
+        .filter-bar select {
+            width: auto;
+            min-width: 200px;
+        }
+        
+        .auth-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.8);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 1001;
+        }
+        .auth-modal {
+            background: white;
+            border-radius: 16px;
+            padding: 40px;
+            width: 100%;
+            max-width: 450px;
+            position: relative;
+        }
+        .auth-modal h2 { text-align: center; margin-bottom: 30px; border-left: none; }
+        .auth-tabs {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 30px;
+            border-bottom: 2px solid #e0e0e0;
+        }
+        .auth-tab {
+            flex: 1;
             text-align: center;
+            padding: 10px;
+            cursor: pointer;
+            font-weight: 600;
+            color: #666;
+            border-bottom: 2px solid transparent;
+            margin-bottom: -2px;
         }
-
-        .mt-20 {
-            margin-top: 20px;
-        }
-
-        .error {
+        .auth-tab.active { color: #667eea; border-bottom-color: #667eea; }
+        .auth-form { display: none; }
+        .auth-form.active { display: block; }
+        .auth-form button { width: 100%; margin-top: 10px; }
+        .error-message {
             background: #fed7d7;
             color: #c53030;
             padding: 10px;
             border-radius: 8px;
             margin-bottom: 15px;
+            text-align: center;
+            font-size: 14px;
+        }
+        .user-info {
+            display: flex;
+            justify-content: flex-end;
+            align-items: center;
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+        .user-name { color: white; font-weight: 500; }
+        .main-content { display: none; }
+        .main-content.visible { display: block; }
+        
+        .edit-modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.8);
+            z-index: 1002;
+            justify-content: center;
+            align-items: center;
+        }
+        .edit-modal-content {
+            background: white;
+            border-radius: 16px;
+            padding: 30px;
+            width: 90%;
+            max-width: 500px;
+        }
+        .edit-modal-content h3 {
+            margin-bottom: 20px;
+            color: #333;
         }
     </style>
 </head>
 <body>
     <div class="container">
-        <h1>🚗 Car Expense Analyzer</h1>
+        <div id="userInfo" class="user-info"></div>
 
-        <!-- Статистика -->
-        <div class="stats-grid" id="stats">
-            <div class="stat-card">
-                <h3 id="totalCars">0</h3>
-                <p>Автомобилей</p>
-            </div>
-            <div class="stat-card">
-                <h3 id="totalExpenses">0</h3>
-                <p>Всего расходов (₽)</p>
-            </div>
-            <div class="stat-card">
-                <h3 id="avgConsumption">-</h3>
-                <p>Ср. расход (л/100км)</p>
-            </div>
-        </div>
+        <div id="mainContent" class="main-content">
+            <h1>🚗 Car Expense Analyzer</h1>
 
-        <!-- Список автомобилей -->
-        <div class="card">
-            <h2>🚙 Мои автомобили</h2>
-            <button class="btn btn-success" onclick="showAddCarForm()">+ Добавить автомобиль</button>
-            <div class="table-responsive">
-                <table id="carsTable">
-                    <thead>
-                        <tr><th>ID</th><th>Марка</th><th>Модель</th><th>Год</th><th>Госномер</th><th>Действия</th></tr>
-                    </thead>
-                    <tbody id="carsList"></tbody>
-                </table>
+            <div class="stats-grid" id="stats">
+                <div class="stat-card">
+                    <h3 id="totalCars">0</h3>
+                    <p>Автомобилей</p>
+                </div>
+                <div class="stat-card">
+                    <h3 id="totalExpenses">0</h3>
+                    <p>Всего расходов (₽)</p>
+                </div>
+                <div class="stat-card">
+                    <h3 id="avgConsumption">-</h3>
+                    <p>Ср. расход (л/100км)</p>
+                </div>
             </div>
-        </div>
 
-        <!-- Форма добавления автомобиля (скрыта) -->
-        <div id="addCarForm" class="card" style="display:none;">
-            <h2>➕ Добавить автомобиль</h2>
-            <div class="form-row">
-                <div class="form-group"><label>Марка</label><input type="text" id="carBrand" placeholder="Toyota"></div>
-                <div class="form-group"><label>Модель</label><input type="text" id="carModel" placeholder="Camry"></div>
-                <div class="form-group"><label>Год</label><input type="number" id="carYear" placeholder="2022"></div>
-                <div class="form-group"><label>Госномер</label><input type="text" id="carPlate" placeholder="А123ВС"></div>
-            </div>
-            <button class="btn" onclick="addCar()">Сохранить</button>
-            <button class="btn btn-danger" onclick="hideAddCarForm()">Отмена</button>
-        </div>
-
-        <!-- Расходы -->
-        <div class="card">
-            <h2>💰 Расходы</h2>
-            <button class="btn btn-success" onclick="showAddExpenseForm()">+ Добавить расход</button>
-            <div class="table-responsive">
-                <table id="expensesTable">
-                    <thead><tr><th>ID авто</th><th>Дата</th><th>Категория</th><th>Сумма (₽)</th><th>Описание</th></tr></thead>
-                    <tbody id="expensesList"></tbody>
-                </table>
-            </div>
-        </div>
-
-        <!-- Форма добавления расхода -->
-        <div id="addExpenseForm" class="card" style="display:none;">
-            <h2>➕ Добавить расход</h2>
-            <div class="form-row">
-                <div class="form-group"><label>ID авто</label><input type="number" id="expenseCarId" placeholder="1"></div>
-                <div class="form-group"><label>Дата</label><input type="date" id="expenseDate"></div>
-                <div class="form-group"><label>Категория</label>
-                    <select id="expenseCategory">
-                        <select name="category">
-                        <option value="fuel">⛽ Бензин</option>
-                        <option value="gas">⛽ Газ</option>
-                        <option value="wash">🧼 Мойка</option>
-                        <option value="repair">🔧 Ремонт</option>
-                        <option value="insurance">📄 Страховка</option>
-                        <option value="other">📌 Другое</option>
+            <!-- АВТОМОБИЛИ -->
+            <div class="card">
+                <h2>🚙 Мои автомобили</h2>
+                <button class="btn btn-success" onclick="showAddCarForm()">+ Добавить автомобиль</button>
+                <div style="margin: 15px 0; padding: 10px; background: #f0f0f0; border-radius: 8px;">
+                    <label style="font-weight: bold; margin-right: 10px;">📊 Показать статистику для:</label>
+                    <select id="statsCarSelect" onchange="updateStatsForCar(this.value)" style="width: auto; min-width: 200px;">
+                        <option value="all">🚗 Все автомобили</option>
                     </select>
                 </div>
-                <div class="form-group"><label>Сумма (₽)</label><input type="number" id="expenseAmount"></div>
-                <div class="form-group"><label>Описание</label><input type="text" id="expenseDesc"></div>
+                <div class="table-responsive">
+                    <table id="carsTable">
+                        <thead>
+                            <tr><th>ID</th><th>Марка</th><th>Модель</th><th>Год</th><th>Госномер</th><th>Действия</th></tr>
+                        </thead>
+                        <tbody id="carsList"></tbody>
+                    </table>
+                </div>
             </div>
-            <button class="btn" onclick="addExpense()">Сохранить</button>
-            <button class="btn btn-danger" onclick="hideAddExpenseForm()">Отмена</button>
+
+            <div id="addCarForm" class="card" style="display:none;">
+                <h2>➕ Добавить автомобиль</h2>
+                <div class="form-row">
+                    <div class="form-group"><label>Марка *</label><input type="text" id="carBrand" placeholder="Toyota"></div>
+                    <div class="form-group"><label>Модель *</label><input type="text" id="carModel" placeholder="Camry"></div>
+                    <div class="form-group"><label>Год *</label><input type="number" id="carYear" placeholder="2022" min="1900" max="2026"></div>
+                    <div class="form-group"><label>Госномер *</label><input type="text" id="carPlate" placeholder="А123ВС777"></div>
+                </div>
+                <button class="btn" onclick="addCar()">Сохранить</button>
+                <button class="btn btn-danger" onclick="hideAddCarForm()">Отмена</button>
+            </div>
+
+            <!-- РАСХОДЫ -->
+            <div class="card">
+                <h2>💰 Расходы</h2>
+                <div class="filter-bar">
+                    <div class="form-group">
+                        <label>📋 Показать расходы для:</label>
+                        <select id="carFilterSelect" onchange="loadExpenses()">
+                            <option value="all">🚗 Все автомобили</option>
+                        </select>
+                    </div>
+                    <button class="btn btn-success" onclick="showAddExpenseForm()">+ Добавить расход</button>
+                </div>
+                <div class="table-responsive">
+                    <table id="expensesTable">
+                        <thead>
+                            <tr><th>ID авто</th><th>Дата</th><th>Категория</th><th>Сумма (₽)</th><th>Описание</th><th>Действия</th></tr>
+                        </thead>
+                        <tbody id="expensesList"></tbody>
+                    </table>
+                </div>
+            </div>
+
+            <div id="addExpenseForm" class="card" style="display:none;">
+                <h2>➕ Добавить расход</h2>
+                <div class="form-row">
+                    <div class="form-group"><label>ID авто *</label><input type="number" id="expenseCarId" placeholder="1" min="1"></div>
+                    <div class="form-group"><label>Дата *</label><input type="date" id="expenseDate"></div>
+                    <div class="form-group"><label>Категория *</label>
+                        <select id="expenseCategory">
+                            <option value="заправка">⛽ Заправка</option>
+                            <option value="мойка">🧼 Мойка</option>
+                            <option value="ремонт">🔧 Ремонт</option>
+                            <option value="страховка">📄 Страховка</option>
+                            <option value="штраф">⚠️ Штрафы</option>
+                            <option value="транспортный налог">🏛️ Транспортный налог</option>
+                            <option value="платные дороги">🛣️ Платные дороги</option>
+                            <option value="другое">📌 Другое</option>
+                        </select>
+                    </div>
+                    <div class="form-group"><label>Сумма (₽) *</label><input type="number" id="expenseAmount" min="0.01" step="0.01"></div>
+                    <div class="form-group"><label>Описание</label><input type="text" id="expenseDesc"></div>
+                </div>
+                <button class="btn" onclick="addExpense()">Сохранить</button>
+                <button class="btn btn-danger" onclick="hideAddExpenseForm()">Отмена</button>
+            </div>
+
+            <!-- ЗАПРАВКИ -->
+            <div class="card">
+                <h2>⛽ Заправки</h2>
+                <div class="filter-bar">
+                    <div class="form-group">
+                        <label>📋 Показать заправки для:</label>
+                        <select id="fuelFilterSelect" onchange="loadFuelups()">
+                            <option value="all">🚗 Все автомобили</option>
+                        </select>
+                    </div>
+                    <button class="btn btn-success" onclick="showAddFuelupForm()">+ Добавить заправку</button>
+                </div>
+                <div class="table-responsive">
+                    <table id="fuelupsTable">
+                        <thead>
+                            <tr><th>ID авто</th><th>Дата</th><th>Литры</th><th>Цена/литр</th><th>Сумма (₽)</th><th>Пробег (км)</th><th>Действия</th></tr>
+                        </thead>
+                        <tbody id="fuelupsList"></tbody>
+                    </table>
+                </div>
+            </div>
+
+            <div id="addFuelupForm" class="card" style="display:none;">
+                <h2>➕ Добавить заправку</h2>
+                <div class="form-row">
+                    <div class="form-group"><label>ID авто *</label><input type="number" id="fuelupCarId" placeholder="1" min="1"></div>
+                    <div class="form-group"><label>Дата *</label><input type="date" id="fuelupDate"></div>
+                    <div class="form-group"><label>Литры *</label><input type="number" step="0.01" id="fuelupLiters" min="0.01"></div>
+                    <div class="form-group"><label>Цена за литр *</label><input type="number" step="0.01" id="fuelupPricePerLiter" min="0.01"></div>
+                    <div class="form-group"><label>Пробег (км) *</label><input type="number" id="fuelupOdometer" min="0"></div>
+                </div>
+                <button class="btn" onclick="addFuelup()">Сохранить</button>
+                <button class="btn btn-danger" onclick="hideAddFuelupForm()">Отмена</button>
+            </div>
+
+            <!-- НАПОМИНАНИЯ -->
+            <div class="card">
+                <h2>⏰ Напоминания об обслуживании</h2>
+                <div class="filter-bar">
+                    <div class="form-group">
+                        <label>📋 Показать напоминания для:</label>
+                        <select id="reminderFilterSelect" onchange="loadReminders()">
+                            <option value="all">🚗 Все автомобили</option>
+                        </select>
+                    </div>
+                    <button class="btn btn-success" onclick="showAddReminderForm()">+ Добавить напоминание</button>
+                </div>
+                <div class="table-responsive">
+                    <table id="remindersTable">
+                        <thead>
+                            <tr><th>ID авто</th><th>Срок</th><th>Заголовок</th><th>Описание</th><th>Статус</th><th>Действия</th></tr>
+                        </thead>
+                        <tbody id="remindersList"></tbody>
+                    </table>
+                </div>
+            </div>
+
+            <div id="addReminderForm" class="card" style="display:none;">
+                <h2>➕ Добавить напоминание</h2>
+                <div class="form-row">
+                    <div class="form-group"><label>ID авто *</label><input type="number" id="reminderCarId" placeholder="1" min="1"></div>
+                    <div class="form-group"><label>Дата *</label><input type="date" id="reminderDueDate"></div>
+                    <div class="form-group"><label>Заголовок *</label><input type="text" id="reminderTitle" placeholder="Замена масла"></div>
+                    <div class="form-group"><label>Описание</label><input type="text" id="reminderDesc"></div>
+                </div>
+                <button class="btn" onclick="addReminder()">Сохранить</button>
+                <button class="btn btn-danger" onclick="hideAddReminderForm()">Отмена</button>
+            </div>
+
+            <!-- КРУГОВАЯ ДИАГРАММА -->
+            <div class="card">
+                <h2>📊 Распределение расходов по категориям</h2>
+                <div class="filter-bar" style="margin-bottom: 15px;">
+                    <div class="form-group">
+                        <label>Выберите автомобиль:</label>
+                        <select id="pieChartCarSelect" onchange="loadPieChart()" style="width: auto; min-width: 200px;">
+                            <option value="all">🚗 Выберите автомобиль</option>
+                        </select>
+                    </div>
+                </div>
+                <div id="pieChartContainer" style="text-align: center; min-height: 300px;">
+                    <p>Выберите автомобиль для просмотра диаграммы</p>
+                </div>
+            </div>
+
+            <!-- СРАВНЕНИЕ АВТОМОБИЛЕЙ -->
+            <div class="card">
+                <h2>📈 Сравнение автомобилей по эффективности</h2>
+                <button class="btn btn-success" onclick="loadComparison()" style="margin-bottom: 15px;">🔄 Обновить сравнение</button>
+                <div class="table-responsive">
+                    <table id="comparisonTable">
+                        <thead>
+                            <tr><th>Автомобиль</th><th>Госномер</th><th>Всего расходов (₽)</th><th>Ср. расход (л/100км)</th><th>Эффективность (₽/100км)</th><th>Кол-во расходов</th></tr>
+                        </thead>
+                        <tbody id="comparisonList"></tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- КОНТАКТЫ -->
+            <div class="card contacts" style="text-align: center;">
+                <h2>📞 Контакты</h2>
+                <p>🐙 GitHub: <a href="https://github.com/nidemeimei777-crypto" target="_blank">@nidemeimei777-crypto</a></p>
+                <p>📧 Email: <a href="mailto:nidemeimei777@gmail.com">nidemeimei777@gmail.com</a></p>
+                <p>💬 Telegram: <a href="https://t.me/chintl_nat" target="_blank">@chintl_nat</a></p>
+                <hr>
+                <p style="font-size: 12px; color: #666;">Car Expense Analyzer © 2026</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Модальное окно аутентификации -->
+    <div id="authOverlay" class="auth-overlay">
+        <div class="auth-modal">
+            <h2>🔐 Добро пожаловать</h2>
+            <div id="authError" class="error-message" style="display: none;"></div>
+            <div class="auth-tabs">
+                <div class="auth-tab active" data-tab="login">Вход</div>
+                <div class="auth-tab" data-tab="register">Регистрация</div>
+            </div>
+            <div id="loginForm" class="auth-form active">
+                <div class="form-group">
+                    <label>Email</label>
+                    <input type="email" id="loginEmail" placeholder="Введите email">
+                </div>
+                <div class="form-group">
+                    <label>Пароль</label>
+                    <div style="display: flex; align-items: center; gap: 8px;">
+                        <input type="password" id="loginPassword" placeholder="Введите пароль" style="flex: 1; padding: 10px;">
+                        <button type="button" onclick="togglePassword('loginPassword')" style="background: #f0f0f0; border: none; cursor: pointer; width: 42px; height: 42px; border-radius: 8px; display: flex; align-items: center; justify-content: center; flex-shrink: 0;">
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#555" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
+                                <circle cx="12" cy="12" r="3"></circle>
+                            </svg>
+                        </button>
+                    </div>
+                </div>
+                <button class="btn btn-success" onclick="login()">Войти</button>
+            </div>
+            <div id="registerForm" class="auth-form">
+                <div class="form-group">
+                    <label>Имя пользователя</label>
+                    <input type="text" id="regUsername" placeholder="Введите имя пользователя">
+                </div>
+                <div class="form-group">
+                    <label>Email</label>
+                    <input type="email" id="regEmail" placeholder="Введите email">
+                </div>
+                <div class="form-group">
+                    <label>Пароль</label>
+                    <div style="display: flex; align-items: center; gap: 8px;">
+                        <input type="password" id="regPassword" placeholder="Введите пароль" style="flex: 1; padding: 10px;">
+                        <button type="button" onclick="togglePassword('regPassword')" style="background: #f0f0f0; border: none; cursor: pointer; width: 42px; height: 42px; border-radius: 8px; display: flex; align-items: center; justify-content: center; flex-shrink: 0;">
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#555" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
+                                <circle cx="12" cy="12" r="3"></circle>
+                            </svg>
+                        </button>
+                    </div>
+                </div>
+                <button class="btn btn-success" onclick="register()">Зарегистрироваться</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Модальное окно редактирования -->
+    <div id="editModal" class="edit-modal">
+        <div class="edit-modal-content">
+            <h3 id="editModalTitle">Редактировать</h3>
+            <div id="editModalContent"></div>
+            <div style="display: flex; gap: 10px; margin-top: 20px;">
+                <button class="btn btn-success" onclick="saveEdit()">Сохранить</button>
+                <button class="btn btn-danger" onclick="closeEditModal()">Отмена</button>
+            </div>
         </div>
     </div>
 
     <script>
         const API_URL = "http://127.0.0.1:8000";
+        let allCarsCache = [];
+        let authToken = localStorage.getItem('access_token');
+        
+        let currentEditType = null;
+        let currentEditId = null;
+        let currentEditData = null;
 
-        async function loadCars() {
-            const res = await fetch(`${API_URL}/cars`);
-            const cars = await res.json();
-            const tbody = document.getElementById('carsList');
-            tbody.innerHTML = '';
-            cars.forEach(car => {
-                const row = tbody.insertRow();
-                row.insertCell(0).textContent = car.id;
-                row.insertCell(1).textContent = car.brand;
-                row.insertCell(2).textContent = car.model;
-                row.insertCell(3).textContent = car.year;
-                row.insertCell(4).textContent = car.license_plate;
-                const actions = row.insertCell(5);
-                const delBtn = document.createElement('button');
-                delBtn.textContent = 'Удалить';
-                delBtn.className = 'btn btn-danger';
-                delBtn.style.padding = '5px 10px';
-                delBtn.onclick = () => deleteCar(car.id);
-                actions.appendChild(delBtn);
-            });
-            document.getElementById('totalCars').textContent = cars.length;
+        function showToast(message, type = 'success') {
+            const toast = document.createElement('div');
+            toast.className = `toast-notification toast-${type}`;
+            toast.textContent = message;
+            document.body.appendChild(toast);
+            setTimeout(() => toast.remove(), 3000);
         }
 
-        async function loadExpenses() {
-            const res = await fetch(`${API_URL}/expenses`);
-            const expenses = await res.json();
-            const tbody = document.getElementById('expensesList');
-            tbody.innerHTML = '';
-            expenses.forEach(exp => {
-                const row = tbody.insertRow();
-                row.insertCell(0).textContent = exp.car_id;
-                row.insertCell(1).textContent = exp.date;
-                row.insertCell(2).textContent = exp.category;
-                row.insertCell(3).textContent = exp.amount;
-                row.insertCell(4).textContent = exp.description || '-';
-            });
-            const total = expenses.reduce((sum, e) => sum + e.amount, 0);
-            document.getElementById('totalExpenses').textContent = total.toLocaleString();
-        }
-
-        async function loadConsumption() {
-            const carsRes = await fetch(`${API_URL}/cars`);
-            const cars = await carsRes.json();
-            if (cars.length > 0) {
-                const statsRes = await fetch(`${API_URL}/stats/fuel_consumption/${cars[0].id}`);
-                if (statsRes.ok) {
-                    const stats = await statsRes.json();
-                    document.getElementById('avgConsumption').textContent = stats.avg_fuel_consumption_L_per_100km || '-';
-                }
+        function togglePassword(fieldId) {
+            const field = document.getElementById(fieldId);
+            if (field) {
+                field.type = field.type === "password" ? "text" : "password";
             }
         }
 
-        async function addCar() {
-            const car = {
-                brand: document.getElementById('carBrand').value,
-                model: document.getElementById('carModel').value,
-                year: parseInt(document.getElementById('carYear').value),
-                license_plate: document.getElementById('carPlate').value
-            };
-            await fetch(`${API_URL}/cars`, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(car)
+        function validateLicensePlate(plate) {
+            const pattern = /^[АВЕКМНОРСТУХ]\d{3}[АВЕКМНОРСТУХ]{2,3}\d{2,3}$/i;
+            return pattern.test(plate.toUpperCase());
+        }
+
+        function showAuthError(message) {
+            const errorDiv = document.getElementById('authError');
+            errorDiv.textContent = message;
+            errorDiv.style.display = 'block';
+            setTimeout(() => errorDiv.style.display = 'none', 3000);
+        }
+
+        // ==================== АУТЕНТИФИКАЦИЯ ====================
+        async function register() {
+            const username = document.getElementById('regUsername').value.trim();
+            const email = document.getElementById('regEmail').value.trim();
+            const password = document.getElementById('regPassword').value;
+            
+            if (!username || !email || !password) {
+                showAuthError('❌ Заполните все поля!');
+                return;
+            }
+            if (username.length < 3) {
+                showAuthError('❌ Имя пользователя должно быть не менее 3 символов!');
+                return;
+            }
+            if (!email.includes('@') || !email.includes('.')) {
+                showAuthError('❌ Введите корректный email!');
+                return;
+            }
+            if (password.length < 4) {
+                showAuthError('❌ Пароль должен быть не менее 4 символов!');
+                return;
+            }
+            
+            try {
+                const response = await fetch(`${API_URL}/auth/register`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ username, email, password })
+                });
+                if (response.ok) {
+                    showToast('Регистрация успешна! Теперь войдите', 'success');
+                    document.querySelector('.auth-tab[data-tab="login"]').click();
+                    document.getElementById('loginEmail').value = email;
+                    document.getElementById('loginPassword').value = '';
+                } else {
+                    const error = await response.json();
+                    showAuthError(`❌ ${error.detail || 'Ошибка регистрации'}`);
+                }
+            } catch (error) {
+                showAuthError('❌ Ошибка соединения');
+            }
+        }
+
+        async function login() {
+            const email = document.getElementById('loginEmail').value.trim();
+            const password = document.getElementById('loginPassword').value;
+            
+            if (!email || !password) {
+                showAuthError('❌ Введите email и пароль!');
+                return;
+            }
+            
+            try {
+                const formData = new URLSearchParams();
+                formData.append('username', email);
+                formData.append('password', password);
+                const response = await fetch(`${API_URL}/auth/login`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+                    body: formData
+                });
+                if (response.ok) {
+                    const data = await response.json();
+                    authToken = data.access_token;
+                    localStorage.setItem('access_token', authToken);
+                    localStorage.setItem('userEmail', email);
+                    showToast('Вход выполнен успешно!', 'success');
+                    document.getElementById('authOverlay').style.display = 'none';
+                    document.getElementById('mainContent').classList.add('visible');
+                    document.getElementById('userInfo').innerHTML = `
+                        <span class="user-name">👤 ${email}</span>
+                        <button class="btn btn-danger" onclick="logout()">Выйти</button>
+                    `;
+                    loadAllData();
+                } else {
+                    const error = await response.json();
+                    showAuthError(`❌ ${error.detail || 'Неверный email или пароль'}`);
+                }
+            } catch (error) {
+                showAuthError('❌ Ошибка соединения');
+            }
+        }
+
+        function logout() {
+            localStorage.removeItem('access_token');
+            localStorage.removeItem('userEmail');
+            authToken = null;
+            document.getElementById('authOverlay').style.display = 'flex';
+            document.getElementById('mainContent').classList.remove('visible');
+            document.getElementById('userInfo').innerHTML = '';
+        }
+
+        function getAuthHeaders() {
+            return { 'Content-Type': 'application/json', 'Authorization': `Bearer ${authToken}` };
+        }
+
+        async function fetchWithAuth(url, options = {}) {
+            const response = await fetch(url, { ...options, headers: { ...getAuthHeaders(), ...options.headers } });
+            if (response.status === 401) { logout(); showToast('Сессия истекла, войдите снова', 'error'); throw new Error('Unauthorized'); }
+            return response;
+        }
+
+        // ==================== МОДАЛЬНОЕ ОКНО РЕДАКТИРОВАНИЯ ====================
+        function escapeHtml(str) {
+            if (!str) return '';
+            return str.replace(/[&<>]/g, function(m) {
+                if (m === '&') return '&amp;';
+                if (m === '<') return '&lt;';
+                if (m === '>') return '&gt;';
+                return m;
             });
-            hideAddCarForm();
-            loadCars();
+        }
+
+        function openEditModal(type, id, data) {
+            currentEditType = type;
+            currentEditId = id;
+            currentEditData = JSON.parse(JSON.stringify(data));
+            
+            const modal = document.getElementById('editModal');
+            const title = document.getElementById('editModalTitle');
+            const content = document.getElementById('editModalContent');
+            
+            if (type === 'car') {
+                title.textContent = '✏️ Редактировать автомобиль';
+                content.innerHTML = `
+                    <div class="form-group"><label>Марка</label><input type="text" id="editBrand" value="${escapeHtml(data.brand)}" class="edit-input"></div>
+                    <div class="form-group"><label>Модель</label><input type="text" id="editModel" value="${escapeHtml(data.model)}" class="edit-input"></div>
+                    <div class="form-group"><label>Год</label><input type="number" id="editYear" value="${data.year}" class="edit-input"></div>
+                    <div class="form-group"><label>Госномер</label><input type="text" id="editPlate" value="${escapeHtml(data.license_plate)}" class="edit-input"></div>
+                `;
+            } else if (type === 'expense') {
+                title.textContent = '✏️ Редактировать расход';
+                content.innerHTML = `
+                    <div class="form-group"><label>ID авто</label><input type="number" id="editCarId" value="${data.car_id}" class="edit-input" min="1"></div>
+                    <div class="form-group"><label>Дата</label><input type="date" id="editDate" value="${data.date}" class="edit-input"></div>
+                    <div class="form-group"><label>Категория</label>
+                        <select id="editCategory" class="edit-input">
+                            <option value="заправка" ${data.category === 'заправка' ? 'selected' : ''}>⛽ Заправка</option>
+                            <option value="мойка" ${data.category === 'мойка' ? 'selected' : ''}>🧼 Мойка</option>
+                            <option value="ремонt" ${data.category === 'ремонт' ? 'selected' : ''}>🔧 Ремонт</option>
+                            <option value="страховка" ${data.category === 'страховка' ? 'selected' : ''}>📄 Страховка</option>
+                            <option value="штраф" ${data.category === 'штраф' ? 'selected' : ''}>⚠️ Штрафы</option>
+                            <option value="транспортный налог" ${data.category === 'транспортный налог' ? 'selected' : ''}>🏛️ Транспортный налог</option>
+                            <option value="платные дороги" ${data.category === 'платные дороги' ? 'selected' : ''}>🛣️ Платные дороги</option>
+                            <option value="другое" ${data.category === 'другое' ? 'selected' : ''}>📌 Другое</option>
+                        </select>
+                    </div>
+                    <div class="form-group"><label>Сумма (₽)</label><input type="number" step="0.01" id="editAmount" value="${data.amount}" class="edit-input" min="0.01"></div>
+                    <div class="form-group"><label>Описание</label><input type="text" id="editDescription" value="${escapeHtml(data.description || '')}" class="edit-input"></div>
+                `;
+            } else if (type === 'fuelup') {
+                title.textContent = '✏️ Редактировать заправку';
+                content.innerHTML = `
+                    <div class="form-group"><label>ID авто</label><input type="number" id="editCarId" value="${data.car_id}" class="edit-input" min="1"></div>
+                    <div class="form-group"><label>Дата</label><input type="date" id="editDate" value="${data.date}" class="edit-input"></div>
+                    <div class="form-group"><label>Литры</label><input type="number" step="0.01" id="editLiters" value="${data.liters}" class="edit-input" min="0.01"></div>
+                    <div class="form-group"><label>Цена за литр</label><input type="number" step="0.01" id="editPrice" value="${data.price_per_liter}" class="edit-input" min="0.01"></div>
+                    <div class="form-group"><label>Пробег</label><input type="number" id="editOdometer" value="${data.odometer}" class="edit-input" min="0"></div>
+                `;
+            } else if (type === 'reminder') {
+                title.textContent = '✏️ Редактировать напоминание';
+                content.innerHTML = `
+                    <div class="form-group"><label>ID авто</label><input type="number" id="editCarId" value="${data.car_id}" class="edit-input" min="1"></div>
+                    <div class="form-group"><label>Дата</label><input type="date" id="editDueDate" value="${data.due_date}" class="edit-input"></div>
+                    <div class="form-group"><label>Заголовок</label><input type="text" id="editTitle" value="${escapeHtml(data.title)}" class="edit-input"></div>
+                    <div class="form-group"><label>Описание</label><input type="text" id="editDescription" value="${escapeHtml(data.description || '')}" class="edit-input"></div>
+                `;
+            }
+            
+            modal.style.display = 'flex';
+        }
+
+        function closeEditModal() {
+            document.getElementById('editModal').style.display = 'none';
+            currentEditType = null;
+            currentEditId = null;
+            currentEditData = null;
+        }
+
+        async function saveEdit() {
+            let updatedData = {};
+            let hasChanges = false;
+            
+            if (currentEditType === 'car') {
+                const newBrand = document.getElementById('editBrand').value.trim();
+                const newModel = document.getElementById('editModel').value.trim();
+                const newYear = parseInt(document.getElementById('editYear').value);
+                const newPlate = document.getElementById('editPlate').value.trim().toUpperCase();
+                
+                if (!newBrand || !newModel || !newYear || !newPlate) {
+                    showToast('Заполните все поля', 'error');
+                    return;
+                }
+                if (newYear < 1900 || newYear > 2026) {
+                    showToast('Год должен быть от 1900 до 2026', 'error');
+                    return;
+                }
+                if (!validateLicensePlate(newPlate)) {
+                    showToast('Неверный формат госномера!', 'error');
+                    return;
+                }
+                
+                updatedData = { brand: newBrand, model: newModel, year: newYear, license_plate: newPlate };
+                hasChanges = JSON.stringify(currentEditData) !== JSON.stringify(updatedData);
+                
+                if (!hasChanges) {
+                    showToast('Данные не были изменены', 'warning');
+                    closeEditModal();
+                    return;
+                }
+                
+                const response = await fetchWithAuth(`${API_URL}/cars/${currentEditId}`, {
+                    method: 'PUT',
+                    body: JSON.stringify(updatedData)
+                });
+                if (response.ok) {
+                    showToast('Автомобиль обновлён', 'success');
+                    loadCars();
+                } else {
+                    showToast('Ошибка при обновлении', 'error');
+                }
+            } 
+            else if (currentEditType === 'expense') {
+                const newCarId = parseInt(document.getElementById('editCarId').value);
+                const newDate = document.getElementById('editDate').value;
+                const newCategory = document.getElementById('editCategory').value;
+                const newAmount = parseFloat(document.getElementById('editAmount').value);
+                const newDescription = document.getElementById('editDescription').value;
+                
+                if (!newCarId || !newDate || !newAmount) {
+                    showToast('Заполните обязательные поля', 'error');
+                    return;
+                }
+                if (newCarId < 1) {
+                    showToast('ID авто должен быть больше 0', 'error');
+                    return;
+                }
+                if (newAmount <= 0) {
+                    showToast('Сумма должна быть больше 0', 'error');
+                    return;
+                }
+                
+                updatedData = { car_id: newCarId, date: newDate, category: newCategory, amount: newAmount, description: newDescription };
+                hasChanges = JSON.stringify(currentEditData) !== JSON.stringify(updatedData);
+                
+                if (!hasChanges) {
+                    showToast('Данные не были изменены', 'warning');
+                    closeEditModal();
+                    return;
+                }
+                
+                const response = await fetchWithAuth(`${API_URL}/expenses/${currentEditId}`, {
+                    method: 'PUT',
+                    body: JSON.stringify(updatedData)
+                });
+                if (response.ok) {
+                    showToast('Расход обновлён', 'success');
+                    loadExpenses();
+                    updateStatsForCar(document.getElementById('statsCarSelect').value);
+                } else {
+                    showToast('Ошибка при обновлении', 'error');
+                }
+            }
+            else if (currentEditType === 'fuelup') {
+                const newCarId = parseInt(document.getElementById('editCarId').value);
+                const newDate = document.getElementById('editDate').value;
+                const newLiters = parseFloat(document.getElementById('editLiters').value);
+                const newPrice = parseFloat(document.getElementById('editPrice').value);
+                const newOdometer = parseInt(document.getElementById('editOdometer').value);
+                
+                if (!newCarId || !newDate || !newLiters || !newPrice || !newOdometer) {
+                    showToast('Заполните все поля', 'error');
+                    return;
+                }
+                if (newCarId < 1) {
+                    showToast('ID авто должен быть больше 0', 'error');
+                    return;
+                }
+                if (newLiters <= 0) {
+                    showToast('Литры должны быть больше 0', 'error');
+                    return;
+                }
+                if (newPrice <= 0) {
+                    showToast('Цена должна быть больше 0', 'error');
+                    return;
+                }
+                if (newOdometer < 0) {
+                    showToast('Пробег должен быть положительным', 'error');
+                    return;
+                }
+                
+                updatedData = { car_id: newCarId, date: newDate, liters: newLiters, price_per_liter: newPrice, odometer: newOdometer };
+                hasChanges = JSON.stringify(currentEditData) !== JSON.stringify(updatedData);
+                
+                if (!hasChanges) {
+                    showToast('Данные не были изменены', 'warning');
+                    closeEditModal();
+                    return;
+                }
+                
+                const response = await fetchWithAuth(`${API_URL}/fuelups/${currentEditId}`, {
+                    method: 'PUT',
+                    body: JSON.stringify(updatedData)
+                });
+                if (response.ok) {
+                    showToast('Заправка обновлена', 'success');
+                    loadFuelups();
+                    loadExpenses();
+                } else {
+                    showToast('Ошибка при обновлении', 'error');
+                }
+            }
+            else if (currentEditType === 'reminder') {
+                const newCarId = parseInt(document.getElementById('editCarId').value);
+                const newDueDate = document.getElementById('editDueDate').value;
+                const newTitle = document.getElementById('editTitle').value.trim();
+                const newDescription = document.getElementById('editDescription').value;
+                
+                if (!newCarId || !newDueDate || !newTitle) {
+                    showToast('Заполните обязательные поля', 'error');
+                    return;
+                }
+                if (newCarId < 1) {
+                    showToast('ID авто должен быть больше 0', 'error');
+                    return;
+                }
+                
+                updatedData = { 
+                    car_id: newCarId, 
+                    due_date: newDueDate, 
+                    title: newTitle, 
+                    description: newDescription, 
+                    is_completed: currentEditData.is_completed === 'True',
+                    triggered_at_odometer: 0 
+                };
+                hasChanges = JSON.stringify(currentEditData) !== JSON.stringify(updatedData);
+                
+                if (!hasChanges) {
+                    showToast('Данные не были изменены', 'warning');
+                    closeEditModal();
+                    return;
+                }
+                
+                const response = await fetchWithAuth(`${API_URL}/reminders/${currentEditId}`, {
+                    method: 'PUT',
+                    body: JSON.stringify(updatedData)
+                });
+                if (response.ok) {
+                    showToast('Напоминание обновлено', 'success');
+                    loadReminders();
+                } else {
+                    showToast('Ошибка при обновлении', 'error');
+                }
+            }
+            
+            closeEditModal();
+        }
+
+        // ==================== АВТОМОБИЛИ ====================
+        async function loadCars() {
+            try {
+                const response = await fetchWithAuth(`${API_URL}/cars/`);
+                if (response.ok) {
+                    const cars = await response.json();
+                    allCarsCache = cars;
+                    const tbody = document.getElementById('carsList');
+                    tbody.innerHTML = '';
+                    
+                    const expenseFilter = document.getElementById('carFilterSelect');
+                    const fuelFilter = document.getElementById('fuelFilterSelect');
+                    const reminderFilter = document.getElementById('reminderFilterSelect');
+                    const statsCarSelect = document.getElementById('statsCarSelect');
+                    const pieChartSelect = document.getElementById('pieChartCarSelect');
+                    
+                    [expenseFilter, fuelFilter, reminderFilter, statsCarSelect].forEach(filter => {
+                        if (filter) filter.innerHTML = '<option value="all">🚗 Все автомобили</option>';
+                    });
+                    
+                    if (pieChartSelect) pieChartSelect.innerHTML = '<option value="all">🚗 Выберите автомобиль</option>';
+                    
+                    cars.forEach(car => {
+                        const optionText = `${car.brand} ${car.model} (${car.license_plate})`;
+                        [expenseFilter, fuelFilter, reminderFilter, statsCarSelect].forEach(filter => {
+                            if (filter) {
+                                const opt = document.createElement('option');
+                                opt.value = car.id;
+                                opt.textContent = optionText;
+                                filter.appendChild(opt);
+                            }
+                        });
+                        
+                        if (pieChartSelect) {
+                            const opt = document.createElement('option');
+                            opt.value = car.id;
+                            opt.textContent = optionText;
+                            pieChartSelect.appendChild(opt);
+                        }
+                        
+                        const row = tbody.insertRow();
+                        row.insertCell(0).textContent = car.id;
+                        row.insertCell(1).textContent = car.brand;
+                        row.insertCell(2).textContent = car.model;
+                        row.insertCell(3).textContent = car.year;
+                        row.insertCell(4).textContent = car.license_plate;
+                        
+                        const actions = row.insertCell(5);
+                        const editBtn = document.createElement('button');
+                        editBtn.innerHTML = '✏️';
+                        editBtn.className = 'btn btn-warning btn-sm';
+                        editBtn.title = 'Редактировать';
+                        editBtn.style.marginRight = '5px';
+                        editBtn.onclick = () => openEditModal('car', car.id, car);
+                        actions.appendChild(editBtn);
+                        
+                        const delBtn = document.createElement('button');
+                        delBtn.innerHTML = '✖️';
+                        delBtn.className = 'btn btn-danger btn-sm';
+                        delBtn.title = 'Удалить';
+                        delBtn.onclick = () => deleteCar(car.id);
+                        actions.appendChild(delBtn);
+                    });
+                    
+                    document.getElementById('totalCars').textContent = cars.length;
+                    updateStatsForCar('all');
+                }
+            } catch (error) { console.error(error); }
+        }
+
+        async function addCar() {
+            const brand = document.getElementById('carBrand').value.trim();
+            const model = document.getElementById('carModel').value.trim();
+            const year = parseInt(document.getElementById('carYear').value);
+            let plate = document.getElementById('carPlate').value.trim().toUpperCase();
+            
+            if (!brand || !model || !year || !plate) { showToast('Заполните все поля', 'error'); return; }
+            if (year < 1900 || year > 2026) { showToast('Год должен быть от 1900 до 2026', 'error'); return; }
+            if (!validateLicensePlate(plate)) { showToast('Неверный формат госномера!', 'error'); return; }
+            
+            try {
+                const response = await fetchWithAuth(`${API_URL}/cars/`, {
+                    method: 'POST', 
+                    body: JSON.stringify({ brand, model, year, license_plate: plate })
+                });
+                if (response.ok) {
+                    showToast(`Автомобиль ${brand} ${model} добавлен`, 'success');
+                    hideAddCarForm();
+                    loadCars();
+                    document.getElementById('carBrand').value = '';
+                    document.getElementById('carModel').value = '';
+                    document.getElementById('carYear').value = '';
+                    document.getElementById('carPlate').value = '';
+                } else { showToast('Ошибка при добавлении', 'error'); }
+            } catch (error) { showToast('Ошибка соединения', 'error'); }
         }
 
         async function deleteCar(id) {
             if (confirm('Удалить автомобиль? Все связанные записи также будут удалены.')) {
-                await fetch(`${API_URL}/cars/${id}`, { method: 'DELETE' });
-                loadCars();
-                loadExpenses();
+                try {
+                    await fetchWithAuth(`${API_URL}/cars/${id}`, { method: 'DELETE' });
+                    showToast('Автомобиль удалён', 'success');
+                    loadCars();
+                    loadExpenses();
+                    loadFuelups();
+                    loadReminders();
+                } catch (error) { showToast('Ошибка при удалении', 'error'); }
+            }
+        }
+
+        // ==================== СТАТИСТИКА ====================
+        async function updateStatsForCar(carId) {
+            try {
+                let url = `${API_URL}/expenses/`;
+                if (carId && carId !== 'all') url = `${API_URL}/expenses/?car_id=${carId}`;
+                const response = await fetchWithAuth(url);
+                if (response.ok) {
+                    let expenses = await response.json();
+                    if (!Array.isArray(expenses)) expenses = [];
+                    const total = expenses.reduce((sum, e) => sum + e.amount, 0);
+                    document.getElementById('totalExpenses').textContent = total.toLocaleString();
+                }
+                if (carId && carId !== 'all') {
+                    const statsRes = await fetchWithAuth(`${API_URL}/stats/fuel_consumption/${carId}`);
+                    if (statsRes.ok) { 
+                        const stats = await statsRes.json(); 
+                        document.getElementById('avgConsumption').textContent = stats.avg_fuel_consumption_L_per_100km || 'Нет данных'; 
+                    }
+                } else {
+                    const carsRes = await fetchWithAuth(`${API_URL}/cars/`);
+                    const cars = await carsRes.json();
+                    if (cars.length > 0) {
+                        const statsRes = await fetchWithAuth(`${API_URL}/stats/fuel_consumption/${cars[0].id}`);
+                        if (statsRes.ok) { 
+                            const stats = await statsRes.json(); 
+                            document.getElementById('avgConsumption').textContent = stats.avg_fuel_consumption_L_per_100km || 'Нет данных'; 
+                        }
+                    }
+                }
+            } catch (error) { console.error(error); }
+        }
+
+        // ==================== РАСХОДЫ ====================
+        async function loadExpenses() {
+            try {
+                const token = localStorage.getItem('access_token');
+                if (!token) {
+                    console.log('Нет токена');
+                    return;
+                }
+                
+                console.log('Загрузка расходов...');
+                const response = await fetch(`${API_URL}/expenses/`, {
+                    headers: { 
+                        'Authorization': `Bearer ${token}`,
+                        'Content-Type': 'application/json'
+                    }
+                });
+                
+                console.log('Статус ответа expenses:', response.status);
+                
+                if (response.ok) {
+                    let expenses = await response.json();
+                    if (!Array.isArray(expenses)) expenses = [];
+                    
+                    const tbody = document.getElementById('expensesList');
+                    if (!tbody) {
+                        console.error('Таблица expensesList не найдена');
+                        return;
+                    }
+                    tbody.innerHTML = '';
+                    
+                    if (expenses.length === 0) {
+                        tbody.innerHTML = '<tr><td colspan="6">Нет расходов</td></tr>';
+                        return;
+                    }
+                    
+                    expenses.forEach(exp => {
+                        const row = tbody.insertRow();
+                        row.insertCell(0).textContent = exp.car_id;
+                        row.insertCell(1).textContent = exp.date;
+                        row.insertCell(2).textContent = exp.category;
+                        row.insertCell(3).textContent = exp.amount;
+                        row.insertCell(4).textContent = exp.description || '-';
+                        
+                        const actions = row.insertCell(5);
+                        const editBtn = document.createElement('button');
+                        editBtn.innerHTML = '✏️';
+                        editBtn.className = 'btn btn-warning btn-sm';
+                        editBtn.onclick = () => openEditModal('expense', exp.id, exp);
+                        actions.appendChild(editBtn);
+                        
+                        const delBtn = document.createElement('button');
+                        delBtn.innerHTML = '✖️';
+                        delBtn.className = 'btn btn-danger btn-sm';
+                        delBtn.onclick = () => deleteExpense(exp.id);
+                        actions.appendChild(delBtn);
+                    });
+                    
+                    const total = expenses.reduce((sum, e) => sum + e.amount, 0);
+                    const totalElement = document.getElementById('totalExpenses');
+                    if (totalElement) totalElement.textContent = total.toLocaleString();
+                    
+                    console.log('Таблица расходов обновлена');
+                } else if (response.status === 401) {
+                    console.log('Токен истек');
+                } else {
+                    console.error('Ошибка:', response.status);
+                }
+            } catch (error) {
+                console.error('Ошибка в loadExpenses:', error);
             }
         }
 
         async function addExpense() {
-            const expense = {
-                car_id: parseInt(document.getElementById('expenseCarId').value),
-                date: document.getElementById('expenseDate').value,
-                category: document.getElementById('expenseCategory').value,
-                amount: parseFloat(document.getElementById('expenseAmount').value),
-                description: document.getElementById('expenseDesc').value
-            };
-            await fetch(`${API_URL}/expenses`, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(expense)
-            });
-            hideAddExpenseForm();
-            loadExpenses();
+            const carId = parseInt(document.getElementById('expenseCarId').value);
+            const date = document.getElementById('expenseDate').value;
+            const category = document.getElementById('expenseCategory').value;
+            const amount = parseFloat(document.getElementById('expenseAmount').value);
+            
+            if (!carId || !date || !amount) {
+                showToast('Заполните обязательные поля', 'error');
+                return;
+            }
+            if (carId < 1) {
+                showToast('ID авто должен быть больше 0', 'error');
+                return;
+            }
+            if (amount <= 0) {
+                showToast('Сумма должна быть больше 0', 'error');
+                return;
+            }
+            
+            try {
+                const response = await fetchWithAuth(`${API_URL}/expenses/`, {
+                    method: 'POST',
+                    body: JSON.stringify({ 
+                        car_id: carId, 
+                        date: date, 
+                        category: category, 
+                        amount: amount, 
+                        description: document.getElementById('expenseDesc').value || '' 
+                    })
+                });
+                
+                if (response.ok) {
+                    showToast(`Расход на ${amount}₽ добавлен`, 'success');
+                    hideAddExpenseForm();
+                    loadExpenses();
+                    updateStatsForCar(document.getElementById('statsCarSelect').value);
+                    
+                    document.getElementById('expenseCarId').value = '';
+                    document.getElementById('expenseDate').value = '';
+                    document.getElementById('expenseAmount').value = '';
+                    document.getElementById('expenseDesc').value = '';
+                } else {
+                    const error = await response.json();
+                    console.error('Ошибка:', error);
+                    showToast('Ошибка при добавлении расхода', 'error');
+                }
+            } catch (error) {
+                console.error('Ошибка:', error);
+                showToast('Ошибка соединения', 'error');
+            }
         }
 
+        async function deleteExpense(id) {
+            if (confirm('Удалить запись о расходе?')) {
+                try {
+                    await fetchWithAuth(`${API_URL}/expenses/${id}`, { method: 'DELETE' });
+                    showToast('Расход удалён', 'success');
+                    loadExpenses();
+                    updateStatsForCar(document.getElementById('statsCarSelect').value);
+                } catch (error) { showToast('Ошибка при удалении', 'error'); }
+            }
+        }
+
+        // ==================== ЗАПРАВКИ ====================
+        async function loadFuelups() {
+            try {
+                const token = localStorage.getItem('access_token');
+                if (!token) {
+                    console.log('Нет токена');
+                    return;
+                }
+                
+                console.log('Загрузка заправок...');
+                const response = await fetch(`${API_URL}/fuelups/`, {
+                    headers: { 
+                        'Authorization': `Bearer ${token}`,
+                        'Content-Type': 'application/json'
+                    }
+                });
+                
+                console.log('Статус ответа fuelups:', response.status);
+                
+                if (response.ok) {
+                    const fuelups = await response.json();
+                    console.log('Получено заправок:', fuelups.length);
+                    
+                    const tbody = document.getElementById('fuelupsList');
+                    if (!tbody) {
+                        console.error('Элемент fuelupsList не найден');
+                        return;
+                    }
+                    tbody.innerHTML = '';
+                    
+                    if (!fuelups || fuelups.length === 0) {
+                        tbody.innerHTML = '<tr><td colspan="7" style="text-align: center;">Нет заправок</td></tr>';
+                        return;
+                    }
+                    
+                    fuelups.forEach(fuelup => {
+                        const amount = (fuelup.liters * fuelup.price_per_liter).toFixed(2);
+                        const row = tbody.insertRow();
+                        row.insertCell(0).textContent = fuelup.car_id;
+                        row.insertCell(1).textContent = fuelup.date;
+                        row.insertCell(2).textContent = fuelup.liters;
+                        row.insertCell(3).textContent = fuelup.price_per_liter;
+                        row.insertCell(4).textContent = amount;
+                        row.insertCell(5).textContent = fuelup.odometer;
+                        
+                        const actions = row.insertCell(6);
+                        const editBtn = document.createElement('button');
+                        editBtn.innerHTML = '✏️';
+                        editBtn.className = 'btn btn-warning btn-sm';
+                        editBtn.onclick = () => openEditModal('fuelup', fuelup.id, fuelup);
+                        actions.appendChild(editBtn);
+                        
+                        const delBtn = document.createElement('button');
+                        delBtn.innerHTML = '✖️';
+                        delBtn.className = 'btn btn-danger btn-sm';
+                        delBtn.onclick = () => deleteFuelup(fuelup.id);
+                        actions.appendChild(delBtn);
+                    });
+                    console.log('Таблица заправок обновлена');
+                } else if (response.status === 401) {
+                    console.log('Токен истек');
+                } else {
+                    console.error('Ошибка загрузки заправок:', response.status);
+                }
+            } catch (error) {
+                console.error('Ошибка в loadFuelups:', error);
+            }
+        }
+
+        async function addFuelup() {
+            const carId = parseInt(document.getElementById('fuelupCarId').value);
+            const date = document.getElementById('fuelupDate').value;
+            const liters = parseFloat(document.getElementById('fuelupLiters').value);
+            const price = parseFloat(document.getElementById('fuelupPricePerLiter').value);
+            const odometer = parseInt(document.getElementById('fuelupOdometer').value);
+
+            if (!carId || !date || !liters || !price || !odometer) {
+                showToast('Заполните все поля', 'error');
+                return;
+            }
+
+            const amount = (liters * price).toFixed(2);
+            
+            try {
+                const response = await fetchWithAuth(`${API_URL}/fuelups/with_expense`, {
+                    method: 'POST',
+                    body: JSON.stringify({
+                        car_id: carId,
+                        date: date,
+                        liters: liters,
+                        price_per_liter: price,
+                        odometer: odometer
+                    })
+                });
+
+                if (response.ok) {
+                    showToast(`Заправка на ${amount}₽ добавлена`, 'success');
+                    hideAddFuelupForm();
+                    await loadFuelups();
+                    await loadExpenses();
+                    
+                    document.getElementById('fuelupCarId').value = '';
+                    document.getElementById('fuelupDate').value = '';
+                    document.getElementById('fuelupLiters').value = '';
+                    document.getElementById('fuelupPricePerLiter').value = '';
+                    document.getElementById('fuelupOdometer').value = '';
+                } else {
+                    const error = await response.json();
+                    console.error('Ошибка:', error);
+                    showToast('Ошибка при добавлении заправки', 'error');
+                }
+            } catch (error) {
+                console.error('Ошибка:', error);
+                showToast('Ошибка соединения', 'error');
+            }
+        }
+
+        async function deleteFuelup(id) {
+            if (confirm('Удалить запись о заправке?')) {
+                try {
+                    await fetchWithAuth(`${API_URL}/fuelups/${id}`, { method: 'DELETE' });
+                    showToast('Заправка удалена', 'success');
+                    loadFuelups();
+                    loadExpenses();
+                } catch (error) { showToast('Ошибка при удалении', 'error'); }
+            }
+        }
+
+        // ==================== НАПОМИНАНИЯ ====================
+        async function loadReminders() {
+            try {
+                const selectedCarId = document.getElementById('reminderFilterSelect').value;
+                let url = `${API_URL}/reminders/`;
+                if (selectedCarId && selectedCarId !== 'all') url = `${API_URL}/reminders/?car_id=${selectedCarId}`;
+                const response = await fetchWithAuth(url);
+                if (response.ok) {
+                    let reminders = await response.json();
+                    if (!Array.isArray(reminders)) reminders = [];
+                    const tbody = document.getElementById('remindersList');
+                    tbody.innerHTML = '';
+                    if (reminders.length === 0) { tbody.innerHTML = '<tr><td colspan="6">Нет напоминаний</td></tr>'; return; }
+                    reminders.forEach(rem => {
+                        const row = tbody.insertRow();
+                        row.insertCell(0).textContent = rem.car_id;
+                        row.insertCell(1).textContent = rem.due_date;
+                        row.insertCell(2).textContent = rem.title;
+                        row.insertCell(3).textContent = rem.description || '-';
+                        row.insertCell(4).textContent = rem.is_completed === 'True' ? '✅ Выполнено' : '⏳ Ожидает';
+                        const actions = row.insertCell(5);
+                        const editBtn = document.createElement('button');
+                        editBtn.innerHTML = '✏️';
+                        editBtn.className = 'btn btn-warning btn-sm';
+                        editBtn.onclick = () => openEditModal('reminder', rem.id, rem);
+                        actions.appendChild(editBtn);
+                        const delBtn = document.createElement('button');
+                        delBtn.innerHTML = '✖️';
+                        delBtn.className = 'btn btn-danger btn-sm';
+                        delBtn.onclick = () => deleteReminder(rem.id);
+                        actions.appendChild(delBtn);
+                    });
+                }
+            } catch (error) { console.error(error); }
+        }
+
+        async function addReminder() {
+            const carId = parseInt(document.getElementById('reminderCarId').value);
+            const dueDate = document.getElementById('reminderDueDate').value;
+            const title = document.getElementById('reminderTitle').value.trim();
+            
+            if (!carId || !dueDate || !title) { showToast('Заполните обязательные поля', 'error'); return; }
+            if (carId < 1) { showToast('ID авто должен быть больше 0', 'error'); return; }
+            
+            try {
+                const response = await fetchWithAuth(`${API_URL}/reminders/`, {
+                    method: 'POST',
+                    body: JSON.stringify({ car_id: carId, due_date: dueDate, title, description: document.getElementById('reminderDesc').value || '', is_completed: false, triggered_at_odometer: 0 })
+                });
+                if (response.ok) {
+                    showToast(`Напоминание "${title}" создано`, 'success');
+                    hideAddReminderForm();
+                    loadReminders();
+                    document.getElementById('reminderCarId').value = '';
+                    document.getElementById('reminderDueDate').value = '';
+                    document.getElementById('reminderTitle').value = '';
+                    document.getElementById('reminderDesc').value = '';
+                } else { showToast('Ошибка при добавлении', 'error'); }
+            } catch (error) { showToast('Ошибка соединения', 'error'); }
+        }
+
+        async function completeReminder(id) {
+            try {
+                const response = await fetchWithAuth(`${API_URL}/reminders/${id}`, { method: 'PATCH' });
+                if (response.ok) {
+                    showToast('Напоминание выполнено!', 'success');
+                    loadReminders();
+                } else { showToast('Ошибка при обновлении', 'error'); }
+            } catch (error) { showToast('Ошибка соединения', 'error'); }
+        }
+
+        async function deleteReminder(id) {
+            if (confirm('Удалить напоминание?')) {
+                try {
+                    await fetchWithAuth(`${API_URL}/reminders/${id}`, { method: 'DELETE' });
+                    showToast('Напоминание удалено', 'success');
+                    loadReminders();
+                } catch (error) { showToast('Ошибка при удалении', 'error'); }
+            }
+        }
+
+        // ==================== UI ФУНКЦИИ ====================
         function showAddCarForm() { document.getElementById('addCarForm').style.display = 'block'; }
         function hideAddCarForm() { document.getElementById('addCarForm').style.display = 'none'; }
         function showAddExpenseForm() { document.getElementById('addExpenseForm').style.display = 'block'; }
         function hideAddExpenseForm() { document.getElementById('addExpenseForm').style.display = 'none'; }
+        function showAddFuelupForm() { document.getElementById('addFuelupForm').style.display = 'block'; }
+        function hideAddFuelupForm() { document.getElementById('addFuelupForm').style.display = 'none'; }
+        function showAddReminderForm() { document.getElementById('addReminderForm').style.display = 'block'; }
+        function hideAddReminderForm() { document.getElementById('addReminderForm').style.display = 'none'; }
 
-        // Инициализация
-        loadCars();
-        loadExpenses();
-        loadConsumption();
+        // ==================== ПЕРЕКЛЮЧЕНИЕ ВКЛАДОК АУТЕНТИФИКАЦИИ ====================
+        document.querySelectorAll('.auth-tab').forEach(tab => {
+            tab.addEventListener('click', () => {
+                document.querySelectorAll('.auth-tab').forEach(t => t.classList.remove('active'));
+                tab.classList.add('active');
+                document.querySelectorAll('.auth-form').forEach(form => form.classList.remove('active'));
+                document.getElementById(`${tab.dataset.tab}Form`).classList.add('active');
+                document.getElementById('authError').style.display = 'none';
+            });
+        });
+
+        // ==================== ЗАГРУЗКА ВСЕХ ДАННЫХ ====================
+        function loadAllData() {
+            loadCars();
+            loadExpenses();
+            loadFuelups();
+            loadReminders();
+        }
+
+        // ==================== ПРОВЕРКА АУТЕНТИФИКАЦИИ ====================
+        if (authToken) {
+            document.getElementById('authOverlay').style.display = 'none';
+            document.getElementById('mainContent').classList.add('visible');
+            const userEmail = localStorage.getItem('userEmail') || 'Пользователь';
+            document.getElementById('userInfo').innerHTML = `
+                <span class="user-name">👤 ${userEmail}</span>
+                <button class="btn btn-danger" onclick="logout()">Выйти</button>
+            `;
+            loadAllData();
+        } else {
+            document.getElementById('authOverlay').style.display = 'flex';
+            document.getElementById('mainContent').classList.remove('visible');
+        }
+
+        // ==================== ДОПОЛНИТЕЛЬНЫЕ ГРАФИКИ ====================
+        async function loadPieChart() {
+            const carId = document.getElementById('pieChartCarSelect').value;
+            if (!carId || carId === 'all') {
+                document.getElementById('pieChartContainer').innerHTML = '<p>Выберите автомобиль для просмотра диаграммы</p>';
+                return;
+            }
+            try {
+                const response = await fetchWithAuth(`${API_URL}/analytics/pie_chart/${carId}`);
+                if (response.ok) {
+                    const data = await response.json();
+                    if (data.image) {
+                        document.getElementById('pieChartContainer').innerHTML = `<img src="${data.image}" style="max-width: 100%; border-radius: 12px;">`;
+                    } else {
+                        document.getElementById('pieChartContainer').innerHTML = `<p>${data.message || 'Нет данных для диаграммы'}</p>`;
+                    }
+                } else {
+                    document.getElementById('pieChartContainer').innerHTML = '<p>Ошибка загрузки диаграммы</p>';
+                }
+            } catch (error) {
+                console.error('Ошибка:', error);
+                document.getElementById('pieChartContainer').innerHTML = '<p>Ошибка загрузки диаграммы</p>';
+            }
+        }
+
+        async function loadComparison() {
+            try {
+                const response = await fetchWithAuth(`${API_URL}/analytics/compare_cars`);
+                if (response.ok) {
+                    const cars = await response.json();
+                    const tbody = document.getElementById('comparisonList');
+                    tbody.innerHTML = '';
+                    if (cars.length === 0) {
+                        tbody.innerHTML = '<tr><td colspan="6">Нет данных для сравнения</td></tr>';
+                        return;
+                    }
+                    cars.forEach(car => {
+                        const row = tbody.insertRow();
+                        row.insertCell(0).textContent = car.name;
+                        row.insertCell(1).textContent = car.license_plate;
+                        row.insertCell(2).textContent = car.total_expenses.toLocaleString();
+                        row.insertCell(3).textContent = car.avg_fuel_consumption ? `${car.avg_fuel_consumption} л/100км` : 'Нет данных';
+                        row.insertCell(4).textContent = car.efficiency_per_100km ? `${car.efficiency_per_100km} ₽/100км` : 'Нет данных';
+                        row.insertCell(5).textContent = car.expenses_count;
+                    });
+                }
+            } catch (error) {
+                console.error('Ошибка:', error);
+            }
+        }
+
+        // ==================== ПРИВЯЗКА К ГЛОБАЛЬНОМУ ОБЪЕКТУ ====================
+        window.showAddCarForm = showAddCarForm;
+        window.hideAddCarForm = hideAddCarForm;
+        window.addCar = addCar;
+        window.deleteCar = deleteCar;
+        window.showAddExpenseForm = showAddExpenseForm;
+        window.hideAddExpenseForm = hideAddExpenseForm;
+        window.addExpense = addExpense;
+        window.deleteExpense = deleteExpense;
+        window.showAddFuelupForm = showAddFuelupForm;
+        window.hideAddFuelupForm = hideAddFuelupForm;
+        window.addFuelup = addFuelup;
+        window.deleteFuelup = deleteFuelup;
+        window.showAddReminderForm = showAddReminderForm;
+        window.hideAddReminderForm = hideAddReminderForm;
+        window.addReminder = addReminder;
+        window.completeReminder = completeReminder;
+        window.deleteReminder = deleteReminder;
+        window.loadExpenses = loadExpenses;
+        window.loadFuelups = loadFuelups;
+        window.loadReminders = loadReminders;
+        window.updateStatsForCar = updateStatsForCar;
+        window.loadPieChart = loadPieChart;
+        window.loadComparison = loadComparison;
+        window.logout = logout;
+        window.login = login;
+        window.register = register;
+        window.togglePassword = togglePassword;
+        window.openEditModal = openEditModal;
+        window.closeEditModal = closeEditModal;
+        window.saveEdit = saveEdit;
     </script>
 </body>
 </html>
