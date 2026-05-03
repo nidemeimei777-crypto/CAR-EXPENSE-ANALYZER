@@ -1,53 +1,102 @@
-from fastapi import APIRouter, HTTPException, status
-from typing import List, Optional
-from app.schemas import CarCreate, CarUpdate, CarResponse
-from app.data_handler import (
-    write_car_to_csv,
-    read_cars_from_csv,
-    read_car_from_csv,
-    update_car_in_csv,
-    delete_car_from_csv
-)
+from fastapi import APIRouter, Depends, HTTPException, status
+from typing import List
+from sqlalchemy.ext.asyncio import AsyncSession
+from sqlalchemy import select, update, delete, text
+from app.db import get_async_session
+from app.models import Car, Expense, FuelUp, Reminder
+from app.schemas.schemas import CarCreate, CarResponse
+from app.auth import get_current_user
+from app.models import User
 
 router = APIRouter(prefix="/cars", tags=["cars"])
 
 
 @router.post("/", response_model=CarResponse, status_code=status.HTTP_201_CREATED)
-def create_car(car: CarCreate):
-    new_car = write_car_to_csv(car)
+async def create_car(
+    car: CarCreate,
+    db: AsyncSession = Depends(get_async_session),
+    current_user: User = Depends(get_current_user)
+):
+    """Добавить новый автомобиль"""
+    new_car = Car(
+        brand=car.brand,
+        model=car.model,
+        year=car.year,
+        license_plate=car.license_plate
+    )
+    db.add(new_car)
+    await db.commit()
+    await db.refresh(new_car)
     return new_car
 
 
 @router.get("/", response_model=List[CarResponse])
-def get_all_cars():
-    cars = read_cars_from_csv()
-    if not cars:
-        raise HTTPException(status_code=404, detail="No cars found")
+async def get_cars(
+    db: AsyncSession = Depends(get_async_session),
+    current_user: User = Depends(get_current_user)
+):
+    """Получить список всех автомобилей"""
+    result = await db.execute(select(Car))
+    cars = result.scalars().all()
     return cars
 
 
-@router.get("/{car_id}", response_model=CarResponse)
-def get_car(car_id: int):
-    car = read_car_from_csv(car_id)
+@router.put("/{car_id}", response_model=CarResponse)
+async def update_car(
+    car_id: int,
+    car_data: CarCreate,
+    db: AsyncSession = Depends(get_async_session),
+    current_user: User = Depends(get_current_user)
+):
+    """Обновить данные автомобиля"""
+    result = await db.execute(select(Car).where(Car.id == car_id))
+    car = result.scalar_one_or_none()
     if not car:
         raise HTTPException(status_code=404, detail="Car not found")
+    
+    car.brand = car_data.brand
+    car.model = car_data.model
+    car.year = car_data.year
+    car.license_plate = car_data.license_plate
+    
+    await db.commit()
+    await db.refresh(car)
     return car
 
 
-@router.put("/{car_id}", response_model=CarResponse)
-def update_car(car_id: int, car_update: CarUpdate):
-    update_data = {k: v for k, v in car_update.dict().items() if v is not None}
-    if not update_data:
-        raise HTTPException(status_code=400, detail="No data to update")
-    
-    updated = update_car_in_csv(car_id, update_data)
-    if not updated:
-        raise HTTPException(status_code=404, detail="Car not found")
-    return updated
-
-
 @router.delete("/{car_id}")
-def delete_car(car_id: int):
-    if not delete_car_from_csv(car_id):
+async def delete_car(
+    car_id: int,
+    db: AsyncSession = Depends(get_async_session),
+    current_user: User = Depends(get_current_user)
+):
+    """Удалить автомобиль и перенумеровать ID оставшихся"""
+    # Проверяем существование автомобиля
+    result = await db.execute(select(Car).where(Car.id == car_id))
+    car = result.scalar_one_or_none()
+    if not car:
         raise HTTPException(status_code=404, detail="Car not found")
-    return {"message": "Car deleted successfully"}
+    
+    # Удаляем связанные записи
+    await db.execute(delete(Expense).where(Expense.car_id == car_id))
+    await db.execute(delete(FuelUp).where(FuelUp.car_id == car_id))
+    await db.execute(delete(Reminder).where(Reminder.car_id == car_id))
+    
+    # Удаляем автомобиль
+    await db.delete(car)
+    
+    # Получаем все оставшиеся автомобили, отсортированные по ID
+    result = await db.execute(select(Car).order_by(Car.id))
+    remaining_cars = result.scalars().all()
+    
+    # Перенумеровываем ID начиная с 1
+    counter = 1
+    for old_car in remaining_cars:
+        await db.execute(update(Car).where(Car.id == old_car.id).values(id=counter))
+        counter += 1
+    
+    # Сбрасываем последовательность ID в PostgreSQL
+    await db.execute(text("SELECT setval('cars_id_seq', (SELECT COALESCE(MAX(id), 1) FROM cars))"))
+    
+    await db.commit()
+    return {"message": "Автомобиль успешно удален"}
