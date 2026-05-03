@@ -1,7 +1,6 @@
 from sqlalchemy import Column, Integer, String, Float, Date, Boolean, ForeignKey
 from sqlalchemy.orm import relationship
 from app.db import Base
-from datetime import date
 
 
 class Car(Base):
@@ -14,9 +13,13 @@ class Car(Base):
     license_plate = Column(String, unique=True, nullable=False)
     odometer = Column(Integer, default=0)
 
-    expenses = relationship("Expense", back_populates="car", cascade="all, delete-orphan")
+    expenses = relationship(
+        "Expense", back_populates="car", cascade="all, delete-orphan"
+    )
     fuelups = relationship("FuelUp", back_populates="car", cascade="all, delete-orphan")
-    reminders = relationship("Reminder", back_populates="car", cascade="all, delete-orphan")
+    reminders = relationship(
+        "Reminder", back_populates="car", cascade="all, delete-orphan"
+    )
 
 
 class Expense(Base):
