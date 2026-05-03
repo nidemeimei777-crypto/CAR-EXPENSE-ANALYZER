@@ -1,56 +1,55 @@
-from fastapi import APIRouter, HTTPException, status, Query
-from typing import List, Optional
-from datetime import date
-from app.schemas import ReminderCreate, ReminderUpdate, ReminderResponse
-from app.data_handler import (
-    write_reminder_to_csv,
-    read_reminders_from_csv,
-    update_reminder_in_csv,
-    delete_reminder_from_csv
-)
+from fastapi import APIRouter, Depends, HTTPException
+from typing import Dict, Any
+from sqlalchemy.ext.asyncio import AsyncSession
+from sqlalchemy import select
+from app.db import get_async_session
+from app.models import FuelUp, Car
+from app.auth import get_current_user
+from app.models import User
 
-router = APIRouter(prefix="/reminders", tags=["reminders"])
+router = APIRouter(prefix="/stats", tags=["stats"])
 
 
-@router.post("/", response_model=ReminderResponse, status_code=status.HTTP_201_CREATED)
-def create_reminder(reminder: ReminderCreate):
-    new_reminder = write_reminder_to_csv(reminder)
-    return new_reminder
-
-
-@router.get("/", response_model=List[ReminderResponse])
-def get_all_reminders(
-    car_id: Optional[int] = Query(None, description="Фильтр по ID автомобиля"),
-    only_active: bool = Query(False, description="Только активные (невыполненные)")
-):
-    reminders = read_reminders_from_csv(car_id, only_active)
-    if not reminders:
-        raise HTTPException(status_code=404, detail="No reminders found")
-    return reminders
-
-
-@router.patch("/{reminder_id}/complete", response_model=ReminderResponse)
-def complete_reminder(reminder_id: int):
-    updated = update_reminder_in_csv(reminder_id, {"is_completed": True})
-    if not updated:
-        raise HTTPException(status_code=404, detail="Reminder not found")
-    return updated
-
-
-@router.put("/{reminder_id}", response_model=ReminderResponse)
-def update_reminder(reminder_id: int, reminder_update: ReminderUpdate):
-    update_data = {k: v for k, v in reminder_update.dict().items() if v is not None}
-    if not update_data:
-        raise HTTPException(status_code=400, detail="No data to update")
+@router.get("/fuel_consumption/{car_id}")
+async def get_fuel_consumption(
+    car_id: int,
+    db: AsyncSession = Depends(get_async_session),
+    current_user: User = Depends(get_current_user)
+) -> Dict[str, Any]:
+    """Рассчитать средний расход топлива (л/100км)"""
+    result = await db.execute(select(FuelUp).where(FuelUp.car_id == car_id).order_by(FuelUp.date))
+    fuelups = result.scalars().all()
     
-    updated = update_reminder_in_csv(reminder_id, update_data)
-    if not updated:
-        raise HTTPException(status_code=404, detail="Reminder not found")
-    return updated
-
-
-@router.delete("/{reminder_id}")
-def delete_reminder(reminder_id: int):
-    if not delete_reminder_from_csv(reminder_id):
-        raise HTTPException(status_code=404, detail="Reminder not found")
-    return {"message": "Reminder deleted successfully"}
+    if not fuelups or len(fuelups) < 2:
+        return {
+            "car_id": car_id,
+            "avg_fuel_consumption_L_per_100km": None,
+            "message": "Need at least 2 fuel-ups to calculate consumption"
+        }
+    
+    total_liters = 0
+    total_distance = 0
+    
+    for i in range(1, len(fuelups)):
+        current = fuelups[i]
+        previous = fuelups[i-1]
+        
+        distance = current.odometer - previous.odometer
+        if distance > 0:
+            total_liters += current.liters
+            total_distance += distance
+    
+    if total_distance > 0:
+        avg_consumption = (total_liters / total_distance) * 100
+        return {
+            "car_id": car_id,
+            "avg_fuel_consumption_L_per_100km": round(avg_consumption, 2),
+            "total_liters": round(total_liters, 2),
+            "total_distance_km": total_distance
+        }
+    
+    return {
+        "car_id": car_id,
+        "avg_fuel_consumption_L_per_100km": None,
+        "message": "Not enough data to calculate consumption"
+    }
