@@ -404,7 +404,6 @@
             <!-- КОНТАКТЫ -->
             <div class="card contacts" style="text-align: center;">
                 <h2>📞 Контакты</h2>
-                <p>🐙 GitHub: <a href="https://github.com/nidemeimei777-crypto" target="_blank">@nidemeimei777-crypto</a></p>
                 <p>📧 Email: <a href="mailto:nidemeimei777@gmail.com">nidemeimei777@gmail.com</a></p>
                 <p>💬 Telegram: <a href="https://t.me/chintl_nat" target="_blank">@chintl_nat</a></p>
                 <hr>
@@ -1017,75 +1016,80 @@
 
         // ==================== РАСХОДЫ ====================
         async function loadExpenses() {
-            try {
-                const token = localStorage.getItem('access_token');
-                if (!token) {
-                    console.log('Нет токена');
-                    return;
-                }
-                
-                console.log('Загрузка расходов...');
-                const response = await fetch(`${API_URL}/expenses/`, {
-                    headers: { 
-                        'Authorization': `Bearer ${token}`,
-                        'Content-Type': 'application/json'
-                    }
-                });
-                
-                console.log('Статус ответа expenses:', response.status);
-                
-                if (response.ok) {
-                    let expenses = await response.json();
-                    if (!Array.isArray(expenses)) expenses = [];
-                    
-                    const tbody = document.getElementById('expensesList');
-                    if (!tbody) {
-                        console.error('Таблица expensesList не найдена');
-                        return;
-                    }
-                    tbody.innerHTML = '';
-                    
-                    if (expenses.length === 0) {
-                        tbody.innerHTML = '<tr><td colspan="6">Нет расходов</td></tr>';
-                        return;
-                    }
-                    
-                    expenses.forEach(exp => {
-                        const row = tbody.insertRow();
-                        row.insertCell(0).textContent = exp.car_id;
-                        row.insertCell(1).textContent = exp.date;
-                        row.insertCell(2).textContent = exp.category;
-                        row.insertCell(3).textContent = exp.amount;
-                        row.insertCell(4).textContent = exp.description || '-';
-                        
-                        const actions = row.insertCell(5);
-                        const editBtn = document.createElement('button');
-                        editBtn.innerHTML = '✏️';
-                        editBtn.className = 'btn btn-warning btn-sm';
-                        editBtn.onclick = () => openEditModal('expense', exp.id, exp);
-                        actions.appendChild(editBtn);
-                        
-                        const delBtn = document.createElement('button');
-                        delBtn.innerHTML = '✖️';
-                        delBtn.className = 'btn btn-danger btn-sm';
-                        delBtn.onclick = () => deleteExpense(exp.id);
-                        actions.appendChild(delBtn);
-                    });
-                    
-                    const total = expenses.reduce((sum, e) => sum + e.amount, 0);
-                    const totalElement = document.getElementById('totalExpenses');
-                    if (totalElement) totalElement.textContent = total.toLocaleString();
-                    
-                    console.log('Таблица расходов обновлена');
-                } else if (response.status === 401) {
-                    console.log('Токен истек');
-                } else {
-                    console.error('Ошибка:', response.status);
-                }
-            } catch (error) {
-                console.error('Ошибка в loadExpenses:', error);
-            }
+    try {
+        const selectedCarId = document.getElementById('carFilterSelect').value;
+        let url = `${API_URL}/expenses/`;
+        if (selectedCarId && selectedCarId !== 'all') {
+            url = `${API_URL}/expenses/?car_id=${selectedCarId}`;
         }
+        
+        console.log('=== ЗАГРУЗКА РАСХОДОВ ===');
+        console.log('Выбранный автомобиль ID:', selectedCarId);
+        console.log('URL запроса:', url);
+        
+        const token = localStorage.getItem('access_token');
+        if (!token) {
+            console.log('Нет токена, нужно войти');
+            return;
+        }
+        
+        const response = await fetch(url, {
+            headers: { 
+                'Authorization': `Bearer ${token}`,
+                'Content-Type': 'application/json'
+            }
+        });
+        
+        console.log('Статус ответа:', response.status);
+        
+        if (response.status === 401) {
+            console.log('Токен истек');
+            logout();
+            return;
+        }
+        
+        if (response.ok) {
+            let expenses = await response.json();
+            if (!Array.isArray(expenses)) expenses = [];
+            
+            console.log('Получено расходов:', expenses.length);
+            
+            const tbody = document.getElementById('expensesList');
+            tbody.innerHTML = '';
+            
+            if (expenses.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="6">Нет расходов для выбранного автомобиля</td></tr>';
+                return;
+            }
+            
+            expenses.forEach(exp => {
+                const row = tbody.insertRow();
+                row.insertCell(0).textContent = exp.car_id;
+                row.insertCell(1).textContent = exp.date;
+                row.insertCell(2).textContent = exp.category;
+                row.insertCell(3).textContent = exp.amount;
+                row.insertCell(4).textContent = exp.description || '-';
+                
+                const actions = row.insertCell(5);
+                const editBtn = document.createElement('button');
+                editBtn.innerHTML = '✏️';
+                editBtn.className = 'btn btn-warning btn-sm';
+                editBtn.onclick = () => openEditModal('expense', exp.id, exp);
+                actions.appendChild(editBtn);
+                
+                const delBtn = document.createElement('button');
+                delBtn.innerHTML = '✖️';
+                delBtn.className = 'btn btn-danger btn-sm';
+                delBtn.onclick = () => deleteExpense(exp.id);
+                actions.appendChild(delBtn);
+            });
+        } else {
+            console.error('Ошибка загрузки расходов:', response.status);
+        }
+    } catch (error) {
+        console.error('Ошибка в loadExpenses:', error);
+    }
+}
 
         async function addExpense() {
             const carId = parseInt(document.getElementById('expenseCarId').value);
@@ -1151,73 +1155,84 @@
         }
 
         // ==================== ЗАПРАВКИ ====================
+        
         async function loadFuelups() {
-            try {
-                const token = localStorage.getItem('access_token');
-                if (!token) {
-                    console.log('Нет токена');
-                    return;
-                }
-                
-                console.log('Загрузка заправок...');
-                const response = await fetch(`${API_URL}/fuelups/`, {
-                    headers: { 
-                        'Authorization': `Bearer ${token}`,
-                        'Content-Type': 'application/json'
-                    }
-                });
-                
-                console.log('Статус ответа fuelups:', response.status);
-                
-                if (response.ok) {
-                    const fuelups = await response.json();
-                    console.log('Получено заправок:', fuelups.length);
-                    
-                    const tbody = document.getElementById('fuelupsList');
-                    if (!tbody) {
-                        console.error('Элемент fuelupsList не найден');
-                        return;
-                    }
-                    tbody.innerHTML = '';
-                    
-                    if (!fuelups || fuelups.length === 0) {
-                        tbody.innerHTML = '<tr><td colspan="7" style="text-align: center;">Нет заправок</td></tr>';
-                        return;
-                    }
-                    
-                    fuelups.forEach(fuelup => {
-                        const amount = (fuelup.liters * fuelup.price_per_liter).toFixed(2);
-                        const row = tbody.insertRow();
-                        row.insertCell(0).textContent = fuelup.car_id;
-                        row.insertCell(1).textContent = fuelup.date;
-                        row.insertCell(2).textContent = fuelup.liters;
-                        row.insertCell(3).textContent = fuelup.price_per_liter;
-                        row.insertCell(4).textContent = amount;
-                        row.insertCell(5).textContent = fuelup.odometer;
-                        
-                        const actions = row.insertCell(6);
-                        const editBtn = document.createElement('button');
-                        editBtn.innerHTML = '✏️';
-                        editBtn.className = 'btn btn-warning btn-sm';
-                        editBtn.onclick = () => openEditModal('fuelup', fuelup.id, fuelup);
-                        actions.appendChild(editBtn);
-                        
-                        const delBtn = document.createElement('button');
-                        delBtn.innerHTML = '✖️';
-                        delBtn.className = 'btn btn-danger btn-sm';
-                        delBtn.onclick = () => deleteFuelup(fuelup.id);
-                        actions.appendChild(delBtn);
-                    });
-                    console.log('Таблица заправок обновлена');
-                } else if (response.status === 401) {
-                    console.log('Токен истек');
-                } else {
-                    console.error('Ошибка загрузки заправок:', response.status);
-                }
-            } catch (error) {
-                console.error('Ошибка в loadFuelups:', error);
-            }
+    try {
+        const selectedCarId = document.getElementById('fuelFilterSelect').value;
+        let url = `${API_URL}/fuelups/`;
+        if (selectedCarId && selectedCarId !== 'all') {
+            url = `${API_URL}/fuelups/?car_id=${selectedCarId}`;
         }
+        
+        console.log('=== ЗАГРУЗКА ЗАПРАВОК ===');
+        console.log('Выбранный автомобиль ID:', selectedCarId);
+        console.log('URL запроса:', url);
+        
+        const token = localStorage.getItem('access_token');
+        if (!token) {
+            console.log('Нет токена, нужно войти');
+            return;
+        }
+        
+        const response = await fetch(url, {
+            headers: { 
+                'Authorization': `Bearer ${token}`,
+                'Content-Type': 'application/json'
+            }
+        });
+        
+        console.log('Статус ответа:', response.status);
+        
+        if (response.status === 401) {
+            console.log('Токен истек');
+            logout();
+            return;
+        }
+        
+        if (response.ok) {
+            let fuelups = await response.json();
+            if (!Array.isArray(fuelups)) fuelups = [];
+            
+            console.log('Получено заправок:', fuelups.length);
+            
+            const tbody = document.getElementById('fuelupsList');
+            tbody.innerHTML = '';
+            
+            if (fuelups.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="7">Нет заправок для выбранного автомобиля</td></tr>';
+                return;
+            }
+            
+            fuelups.forEach(fuelup => {
+                const amount = (fuelup.liters * fuelup.price_per_liter).toFixed(2);
+                const row = tbody.insertRow();
+                row.insertCell(0).textContent = fuelup.car_id;
+                row.insertCell(1).textContent = fuelup.date;
+                row.insertCell(2).textContent = fuelup.liters;
+                row.insertCell(3).textContent = fuelup.price_per_liter;
+                row.insertCell(4).textContent = amount;
+                row.insertCell(5).textContent = fuelup.odometer;
+                
+                const actions = row.insertCell(6);
+                const editBtn = document.createElement('button');
+                editBtn.innerHTML = '✏️';
+                editBtn.className = 'btn btn-warning btn-sm';
+                editBtn.onclick = () => openEditModal('fuelup', fuelup.id, fuelup);
+                actions.appendChild(editBtn);
+                
+                const delBtn = document.createElement('button');
+                delBtn.innerHTML = '✖️';
+                delBtn.className = 'btn btn-danger btn-sm';
+                delBtn.onclick = () => deleteFuelup(fuelup.id);
+                actions.appendChild(delBtn);
+            });
+        } else {
+            console.error('Ошибка загрузки заправок:', response.status);
+        }
+    } catch (error) {
+        console.error('Ошибка в loadFuelups:', error);
+    }
+}
 
         async function addFuelup() {
             const carId = parseInt(document.getElementById('fuelupCarId').value);
