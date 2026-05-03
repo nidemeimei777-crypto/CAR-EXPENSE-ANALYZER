@@ -3,7 +3,7 @@ from typing import List, Optional
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import select
 from app.db import get_async_session
-from app.models import Expense, Car
+from app.models import Expense
 from app.schemas.schemas import ExpenseCreate, ExpenseResponse
 from app.auth import get_current_user
 from app.models import User
@@ -18,11 +18,6 @@ async def create_expense(
     current_user: User = Depends(get_current_user)
 ):
     """Добавить расход"""
-    result = await db.execute(select(Car).where(Car.id == expense.car_id))
-    car = result.scalar_one_or_none()
-    if not car:
-        raise HTTPException(status_code=404, detail="Car not found")
-    
     new_expense = Expense(
         car_id=expense.car_id,
         date=expense.date,
@@ -42,42 +37,13 @@ async def get_expenses(
     db: AsyncSession = Depends(get_async_session),
     current_user: User = Depends(get_current_user)
 ):
-    """Получить все расходы (с фильтрацией)"""
+    """Получить все расходы (с фильтрацией по автомобилю)"""
     if car_id:
         result = await db.execute(select(Expense).where(Expense.car_id == car_id))
     else:
         result = await db.execute(select(Expense))
     expenses = result.scalars().all()
     return expenses
-
-
-@router.put("/{expense_id}", response_model=ExpenseResponse)
-async def update_expense(
-    expense_id: int,
-    expense_data: ExpenseCreate,
-    db: AsyncSession = Depends(get_async_session),
-    current_user: User = Depends(get_current_user)
-):
-    """Обновить данные расхода"""
-    result = await db.execute(select(Expense).where(Expense.id == expense_id))
-    expense = result.scalar_one_or_none()
-    if not expense:
-        raise HTTPException(status_code=404, detail="Expense not found")
-    
-    # Проверяем существование автомобиля
-    car_result = await db.execute(select(Car).where(Car.id == expense_data.car_id))
-    if not car_result.scalar_one_or_none():
-        raise HTTPException(status_code=404, detail="Car not found")
-    
-    expense.car_id = expense_data.car_id
-    expense.date = expense_data.date
-    expense.category = expense_data.category
-    expense.amount = expense_data.amount
-    expense.description = expense_data.description
-    
-    await db.commit()
-    await db.refresh(expense)
-    return expense
 
 
 @router.delete("/{expense_id}")
@@ -91,7 +57,6 @@ async def delete_expense(
     expense = result.scalar_one_or_none()
     if not expense:
         raise HTTPException(status_code=404, detail="Expense not found")
-    
     await db.delete(expense)
     await db.commit()
     return {"message": "Expense deleted successfully"}
